@@ -120,6 +120,7 @@ async function loginUI(w,email,pw){type(w,Q(w,'input[name=email]'),email);type(w
   const journeyCourse=await created.json();
   const section=await (await api("/api/manage/courses/"+journeyCourse.id+"/sections","POST",{title_en:"Start here"},adm)).json();
   const lesson=await (await api("/api/manage/sections/"+section.id+"/lessons","POST",{title_en:"First lesson",kind:"text",content_text:"Welcome to the course",duration_minutes:5},adm)).json();
+  await api("/api/manage/sections/"+section.id+"/lessons","POST",{title_en:"Second lesson",kind:"text",content_text:"Continue learning",duration_minutes:5},adm);
   const thumbForm=new FormData();thumbForm.append("file",new Blob([PNG],{type:"image/png"}),"journey.png");
   const thumbResponse=await fetch(B+"/api/manage/courses/"+journeyCourse.id+"/thumbnail",{method:"POST",headers:{"X-Requested-With":"saba",Cookie:adm},body:thumbForm});
   ok("test course thumbnail upload succeeds",thumbResponse.ok);
