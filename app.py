@@ -576,7 +576,25 @@ def patch_cat(cid: int, b: CatIn, db: Session = Depends(get_db), u=Depends(admin
 @app.get("/api/health")
 def health(): return {"ok": True}
 
-if (BASE / "static").is_dir(): app.mount("/", StaticFiles(directory=str(BASE / "static"), html=True), name="static")
+# Serve the frontend files whether they are in /static or at the repository root.
+if (BASE / "static").is_dir():
+    app.mount("/", StaticFiles(directory=str(BASE / "static"), html=True), name="static")
+else:
+    @app.get("/", include_in_schema=False)
+    def homepage():
+        index = BASE / "index.html"
+        if not index.is_file(): raise HTTPException(404, "Website homepage not found")
+        return FileResponse(index)
+
+    @app.get("/dashboard.html", include_in_schema=False)
+    def dashboard_page():
+        dashboard = BASE / "dashboard.html"
+        if not dashboard.is_file(): raise HTTPException(404, "Dashboard page not found")
+        return FileResponse(dashboard)
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    def favicon():
+        return Response(status_code=204)
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "serve"
