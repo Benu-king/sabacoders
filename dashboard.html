@@ -148,7 +148,7 @@ async function viewApplication(){
    F(t("expertise"),h("input",{class:"in",name:"expertise",required:true,minlength:2,maxlength:160,placeholder:"e.g. Programming, design, finance"}))),
   F(t("motivation"),h("textarea",{class:"in",name:"motivation",required:true,minlength:20,maxlength:3000,rows:5})),err,
   h("button",{class:"btn",type:"submit"},t("apply")));
- return h("div",{class:"page login"},h("div",{class:"card stack"},h("a",{href:"#courses"},"← "+t("backToLogin")),h("h1",{},t("applyTitle")),h("p",{class:"muted"},t("applyIntro")),f,h("div",{class:"row"},langBtn())))
+ return h("div",{class:"page login"},h("div",{class:"card stack"},h("a",{href:"/?login=1"},"← "+t("backToLogin")),h("h1",{},t("applyTitle")),h("p",{class:"muted"},t("applyIntro")),f,h("div",{class:"row"},langBtn())))
 }
 async function viewApplications(){
  var list=await api("/api/admin/teacher-applications");
