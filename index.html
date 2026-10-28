@@ -411,7 +411,7 @@ C(4,"Beginner",14,20,1600,"video","Smartphone Repair Fundamentals","የስማር
 C(6,"Beginner",13,19,1700,"mixed","Introduction to Architectural Drawing","የአርክቴክቸራል ስዕል መግቢያ"),C(7,"Intermediate",18,26,1400,"text","Engineering Maths in Practice","ለተግባር የምህንድስና ሂሳብ"),
 C(8,"Beginner",10,15,0,"video","Graphic Design Fundamentals","የግራፊክ ዲዛይን መሰረታዊ ነገሮች"),C(9,"Beginner",6,10,0,"text","Starting a Small Business","አነስተኛ ቢዝነስ መጀመር")];
 var DATA={demo:true,load:function(){return new Promise(function(res){setTimeout(function(){res(DEMO)},600)})}};
-var CAT=[],CATS=[],API=false,PG={page:1,pages:1,total:0,size:12},status="loading",F={cat:null,level:"",price:"",type:"",sort:"az"};
+var CAT=[],CATS=[],API=false,AUTH_API=false,PG={page:1,pages:1,total:0,size:12},status="loading",F={cat:null,level:"",price:"",type:"",sort:"az"};
 var LV=["Beginner","Intermediate","Advanced"],LVO={Beginner:0,Intermediate:1,Advanced:2};
 function ttl(c){return c.title[lang]||c.title.en}
 var SORT={az:function(a,b){return ttl(a).localeCompare(ttl(b),lang)},dshort:function(a,b){return a.hours-b.hours},dlong:function(a,b){return b.hours-a.hours},plow:function(a,b){return a.price-b.price},phigh:function(a,b){return b.price-a.price},level:function(a,b){return LVO[a.level]-LVO[b.level]||a.hours-b.hours}};
@@ -444,8 +444,10 @@ var tm;function refresh(){if(API){PG.page=1;clearTimeout(tm);tm=setTimeout(loadC
 function loadHome(){fetch("/api/courses?page_size=4&sort=newest",{credentials:"same-origin"}).then(function(r){return r.json()}).then(function(j){COURSES=j.items.map(adapt);render()}).catch(function(){})}
 function boot(){
  if(!window.fetch){loadCat();return}
+ // Keep account sign-in independent from course catalogue loading.
+ fetch("/api/health",{credentials:"same-origin"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(){AUTH_API=true;showMode();whoami()},function(){AUTH_API=false;showMode()});
  fetch("/api/categories",{credentials:"same-origin"}).then(function(r){if(!r.ok||(r.headers.get("content-type")||"").indexOf("json")<0)throw 0;return r.json()}).then(function(j){
-  API=true;CATS=j;D=j.map(function(c){return[c.name_en,c.name_am||c.name_en]});DATA.demo=false;$("#demoNote").hidden=true;buildSelects();loadCat();loadHome();whoami()},function(){API=false;loadCat()})}
+  API=true;CATS=j;D=j.map(function(c){return[c.name_en,c.name_am||c.name_en]});DATA.demo=false;$("#demoNote").hidden=true;buildSelects();loadCat();loadHome()},function(){API=false;loadCat()})}
 function loadCat(){status="loading";renderExplore();
  if(API){var p=new URLSearchParams({page:PG.page,page_size:PG.size,sort:F.sort});if(Q.trim())p.set("q",Q.trim());if(F.cat!==null)p.set("category",CATS[F.cat].slug);if(F.level)p.set("level",F.level);if(F.price)p.set("price",F.price);if(F.type)p.set("type",F.type);
   fetch("/api/courses?"+p,{credentials:"same-origin"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){CAT=j.items.map(adapt);PG.total=j.total;PG.pages=j.pages;PG.page=j.page;status="ok";renderExplore()},function(){status="error";renderExplore()});return}
@@ -480,7 +482,7 @@ function errMsg(d){var x=d&&d.detail;if(typeof x==="string")return x;if(Array.is
 function setAuthUI(){$$(".acts [data-open],.menu [data-open]").forEach(function(b){b.hidden=!!ME});$("#whoBox").hidden=!ME;$("#menuWho").hidden=!ME;$$(".dashLink").forEach(function(a){a.hidden=!ME||ME.role==="student"})}
 function whoami(){fetch("/api/auth/me",{credentials:"same-origin"}).then(function(r){return r.ok?r.json():null}).then(function(u){ME=u;setAuthUI()},function(){})}
 function showMode(){var r=amode==="register",L=T[lang];$("#nameRow").hidden=!r;$("#fName").required=r;$("#dt").textContent=r?L.auth_reg:L.auth_login;$("#authGo").textContent=r?L.auth_reg:L.auth_login;
- $("#tabL").setAttribute("aria-pressed",String(!r));$("#tabR").setAttribute("aria-pressed",String(r));$("#fPw").autocomplete=r?"new-password":"current-password";$("#authDemo").hidden=API;$("#authForm").hidden=!API}
+ $("#tabL").setAttribute("aria-pressed",String(!r));$("#tabR").setAttribute("aria-pressed",String(r));$("#fPw").autocomplete=r?"new-password":"current-password";$("#authDemo").hidden=AUTH_API;$("#authForm").hidden=!AUTH_API}
 function openAuth(m){amode=m;$("#authErr").textContent="";showMode();dlg.showModal()}
 $$("[data-open]").forEach(function(b){b.addEventListener("click",function(){closeMenu();if(ME){location.hash="explore";return}openAuth(b.dataset.i18n==="signin"?"login":"register")})});
 $("#tabL").onclick=function(){amode="login";showMode()};$("#tabR").onclick=function(){amode="register";showMode()};$("#authClose").onclick=function(){dlg.close()};
