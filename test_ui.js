@@ -9,9 +9,9 @@ async function until(fn,ms=6000){const t=Date.now();while(Date.now()-t<ms){try{i
 async function api(p,method="GET",body,cookie){const r=await fetch(B+p,{method,headers:{"Content-Type":"application/json","X-Requested-With":"saba",...(cookie?{Cookie:cookie}:{})},body:body?JSON.stringify(body):undefined});return r}
 async function cookieOf(em,pw){const r=await api("/api/auth/login","POST",{email:em,password:pw});return r.headers.get("set-cookie").split(";")[0]}
 async function open(file,hash="",stub){ // a browser window with its own cookie jar
- const jar={c:""};const html=await (await fetch(B+"/"+file)).text();
+ const jar={c:""};const pagePath=file==="index.html"?"/":"/"+file;const html=await (await fetch(B+pagePath)).text();
  const vc=new VirtualConsole();vc.on("jsdomError",e=>{if(process.env.DBG)console.log("PAGE ERROR:",String(e.stack||e.message).slice(0,400))});
- const dom=new JSDOM(html,{url:B+"/"+file+hash,runScripts:"dangerously",pretendToBeVisual:true,virtualConsole:vc,beforeParse(w){
+ const dom=new JSDOM(html,{url:B+pagePath+hash,runScripts:"dangerously",pretendToBeVisual:true,virtualConsole:vc,beforeParse(w){
   w.matchMedia=()=>({matches:false,addEventListener(){}});w.scrollTo=()=>{};w.Element.prototype.scrollIntoView=()=>{};w.confirm=()=>true;
   w.HTMLDialogElement.prototype.showModal=function(){this.setAttribute("open","")};w.HTMLDialogElement.prototype.close=function(){this.removeAttribute("open")};
   w.fetch=async(u,o={})=>{let body=o.body;if(body instanceof w.FormData){const fd=new FormData();for(const [k,v] of body.entries())v.__bytes?fd.append(k,new Blob([v.__bytes],{type:v.type}),v.name):fd.append(k,v);body=fd}
@@ -99,7 +99,7 @@ async function loginUI(w,email,pw){type(w,Q(w,'input[name=email]'),email);type(w
   click(D,QA(D,"nav a").find(a=>a.textContent==="Review queue"));await until(()=>btn(D,"Review"));if(process.env.DBG)console.log("DBG D queue:",body(D).replace(/\s+/g," ").slice(0,500),"| status:",(await (await api("/api/manage/courses/"+cid,"GET",null,tk)).json()).status);click(D,btn(D,"Review"));await until(()=>btn(D,"Approve and publish"));
   click(D,btn(D,"Approve and publish"));await until(()=>/Course published/.test(txt(D,"#toast")));ok("admin approves and publishes",/Course published/.test(txt(D,"#toast")));
   ok("course is now public through the API",(await (await api("/api/courses/"+cid)).json()).title_en==="Ui Built Course");
-  const S=await open("index.html","#explore");await until(()=>QA(S,"#xgrid .cc").length>0);
+  const S=await open("index.html","#explore");await until(()=>QA(S,"#xgrid .cc").some(c=>/Ui Built Course/.test(c.textContent)));
   ok("Explore page shows the course published via the dashboard (no code change)",QA(S,"#xgrid .cc").some(c=>/Ui Built Course/.test(c.textContent))&&!QA(S,"#xgrid .demo").length);
 
   // ---- admin: categories and users
