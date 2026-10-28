@@ -21,19 +21,22 @@ python app.py serve
 |---|---|
 | Visitor | browse published courses only |
 | Student (self-registered) | + enrol in free courses, lesson content, materials, progress. **No dashboard access.** |
-| Teacher (created by an admin) | create drafts; edit **only courses they are attached to**; upload thumbnail/materials; build sections and lessons; submit for review; unpublish own course. Cannot approve, cannot touch other teachers' courses |
+| Teacher (approved by an admin; applicants may self-apply) | create drafts; edit **only courses they are attached to**; upload thumbnail/materials; build sections and lessons; submit for review; unpublish own course. Cannot approve, cannot touch other teachers' courses |
 | Admin | everything: review queue, approve/reject (reason required), unpublish, edit any course, categories, users. Cannot demote or deactivate themselves or the last admin |
 
 ## Publishing workflow
 `draft → pending_review → published` · admin may `reject` (note shown to the teacher; teacher edits and resubmits) · `published → unpublished → edit → resubmit`.
 Teachers cannot edit a course while it is pending or published (unpublish first). Set `REQUIRE_APPROVAL=0` to let teachers publish directly.
 
-## Creating the first teacher
-Log in to the dashboard as admin → **Users** → *Create account* with role *Teacher*. The teacher logs in at `/dashboard.html`.
+## Becoming a teacher
+Anyone can open `/dashboard.html#apply` (or choose **Become an instructor** on the dashboard login screen) and submit their name, email, password, teaching expertise, and motivation. Applications remain pending until an administrator reviews them. Approval creates a teacher account (or promotes an existing student account); rejection does not grant access. The applicant's password is stored only as a password hash. Admins can review applications under **Instructor applications** in the dashboard. Public registration never accepts a role, so applicants cannot grant themselves teacher or admin access.
+
+Admins can still create teacher accounts manually from **Users** if needed.
 
 ## API used by the dashboard
 Auth: `POST /api/auth/login|logout|register`, `GET /api/auth/me`.
 Courses: `GET|POST /api/manage/courses`, `GET|PATCH|DELETE /api/manage/courses/{id}`, `POST .../thumbnail`, `POST .../materials`, `DELETE /api/manage/materials/{id}`, `POST .../sections`, `PATCH|DELETE /api/manage/sections/{id}`, `POST /api/manage/sections/{id}/lessons`, `PATCH|DELETE /api/manage/lessons/{id}`, `POST .../submit`, `POST .../unpublish`.
+Teacher applications: `POST /api/teacher-applications`, admin `GET /api/admin/teacher-applications`, `POST /api/admin/teacher-applications/{id}/approve|reject`.
 Admin: `GET /api/admin/review-queue`, `POST /api/admin/courses/{id}/approve|reject`, `GET|POST /api/admin/users`, `PATCH /api/admin/users/{id}`, `GET|POST /api/admin/categories`, `PATCH /api/admin/categories/{id}`.
 Public: `GET /api/categories`, `GET /api/courses`, `GET /api/courses/{id-or-slug}`, `.../curriculum`, `.../thumbnail`.
 Every state-changing request must send `X-Requested-With: saba` (CSRF defence); sessions are HttpOnly cookies.
