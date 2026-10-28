@@ -407,16 +407,9 @@ var ME=null,amode="login",Q="",INFO=["codelab","pricing","about","blog","contact
    {id,d:<discipline index>,level:"Beginner|Intermediate|Advanced",hours,lessons,price:0|number,
     type:"video|text|mixed",title:{en,am},instructor:{en,am}|null,image:"url"|null}
    To connect a backend: set demo:false and make load() return fetch("/api/courses").then(r=>r.json()). */
-function C(d,level,hours,lessons,price,type,en,am,ins){return{id:en,d:d,level:level,hours:hours,lessons:lessons,price:price,type:type,title:{en:en,am:am},instructor:ins?{en:"Demo instructor",am:"ማሳያ መምህር"}:null,image:null,demo:true}}
-var DEMO=[C(0,"Beginner",12,24,0,"video","Python Foundations","ፓይቶን መሰረታዊ ትምህርት",1),C(0,"Intermediate",20,30,1500,"mixed","Algorithms and Problem Solving","አልጎሪዝምና ችግር አፈታት"),
-C(1,"Beginner",10,18,0,"mixed","HTML and CSS Essentials","የኤችቲኤምኤልና ሲኤስኤስ መሰረታዊ ነገሮች",1),C(1,"Advanced",28,36,2500,"video","Building Modern Web Apps","ዘመናዊ የዌብ መተግበሪያዎችን መገንባት"),
-C(2,"Beginner",8,14,0,"text","Cybersecurity Basics","የሳይበር ደህንነት መግቢያ"),C(2,"Intermediate",16,22,1800,"video","Network Defence Practice","የኔትወርክ መከላከያ ልምምድ",1),
-C(3,"Beginner",9,16,1200,"video","Introduction to Forex Markets","የፎሬክስ ገበያ መግቢያ"),C(3,"Intermediate",7,12,1200,"text","Risk Management for Traders","ለነጋዴዎች የአደጋ አስተዳደር"),
-C(4,"Beginner",14,20,1600,"video","Smartphone Repair Fundamentals","የስማርት ስልክ ጥገና መሰረታዊ ነገሮች"),C(5,"Beginner",11,17,0,"mixed","PC Maintenance and Troubleshooting","የኮምፒውተር ጥገናና ችግር መፍታት"),
-C(6,"Beginner",13,19,1700,"mixed","Introduction to Architectural Drawing","የአርክቴክቸራል ስዕል መግቢያ"),C(7,"Intermediate",18,26,1400,"text","Engineering Maths in Practice","ለተግባር የምህንድስና ሂሳብ"),
-C(8,"Beginner",10,15,0,"video","Graphic Design Fundamentals","የግራፊክ ዲዛይን መሰረታዊ ነገሮች"),C(9,"Beginner",6,10,0,"text","Starting a Small Business","አነስተኛ ቢዝነስ መጀመር")];
-var DATA={demo:true,load:function(){return new Promise(function(res){setTimeout(function(){res(DEMO)},600)})}};
-var CAT=[],CATS=[],API=false,AUTH_API=false,PG={page:1,pages:1,total:0,size:12},status="loading",F={cat:null,level:"",price:"",type:"",sort:"az"};
+ // Never substitute fabricated courses when the API is unavailable.
+ var DATA={demo:false,load:function(){return Promise.resolve([])}};
+ var CAT=[],CATS=[],API=false,AUTH_API=false,PG={page:1,pages:1,total:0,size:12},status="loading",F={cat:null,level:"",price:"",type:"",sort:"az"};
 var LV=["Beginner","Intermediate","Advanced"],LVO={Beginner:0,Intermediate:1,Advanced:2};
 function ttl(c){return c.title[lang]||c.title.en}
 var SORT={az:function(a,b){return ttl(a).localeCompare(ttl(b),lang)},dshort:function(a,b){return a.hours-b.hours},dlong:function(a,b){return b.hours-a.hours},plow:function(a,b){return a.price-b.price},phigh:function(a,b){return b.price-a.price},level:function(a,b){return LVO[a.level]-LVO[b.level]||a.hours-b.hours}};
