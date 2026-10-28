@@ -494,6 +494,7 @@ bg.onclick=function(){var o=menu.hidden;menu.hidden=!o;bg.setAttribute("aria-exp
 $$("#menu a").forEach(function(a){a.addEventListener("click",closeMenu)});
 $("#up").onclick=function(){window.scrollTo({top:0,behavior:"smooth"})};
 apply();
+if(new URLSearchParams(location.search).get("login")==="1")openAuth("login");
 document.documentElement.classList.add("js");
 var rv=$$(".rv");
 function showAll(){rv.forEach(function(e){e.classList.add("in")})}
