@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+saba.db
+*.sqlite
+*.sqlite3
+uploads/
+node_modules/
+.pytest_cache/
+.coverage
+htmlcov/
+.DS_Store
