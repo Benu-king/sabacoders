@@ -15,10 +15,16 @@ from sqlalchemy import (create_engine, event, String, Integer, Text, Boolean, Da
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker, Session
 
 BASE = pathlib.Path(__file__).parent
+APP_ENV = os.getenv("APP_ENV", "development").strip().lower()
+IS_PRODUCTION = APP_ENV == "production"
 DB_URL = os.getenv("DATABASE_URL", f"sqlite:///{BASE / 'saba.db'}")
-UPLOADS = pathlib.Path(os.getenv("UPLOAD_DIR", str(BASE / "uploads")))
+if IS_PRODUCTION and (not os.getenv("DATABASE_URL") or DB_URL.startswith("sqlite")):
+    raise RuntimeError("Production requires DATABASE_URL pointing to PostgreSQL; SQLite is for development/tests only.")
+UPLOADS = pathlib.Path(os.getenv("UPLOAD_DIR", str(BASE / "uploads"))).resolve()
 REQUIRE_APPROVAL = os.getenv("REQUIRE_APPROVAL", "1") == "1"   # teachers need admin approval to publish
-COOKIE_SECURE = os.getenv("COOKIE_SECURE", "0") == "1"          # set 1 behind HTTPS
+COOKIE_SECURE = os.getenv("COOKIE_SECURE", "1" if IS_PRODUCTION else "0") == "1"
+if IS_PRODUCTION and not COOKIE_SECURE:
+    raise RuntimeError("Production sessions require COOKIE_SECURE=1 and HTTPS.")
 SESSION_DAYS, MAX_THUMB = 14, 3 * 1024 * 1024
 MAX_MATERIAL = int(os.getenv("MAX_MATERIAL_MB", "25")) * 1024 * 1024
 
@@ -192,7 +198,11 @@ async def guard(request: Request, call_next):
     if request.method not in ("GET", "HEAD", "OPTIONS") and request.url.path.startswith("/api/") and request.headers.get("x-requested-with") != "saba":
         return JSONResponse({"detail": "Missing X-Requested-With header"}, 403)
     r = await call_next(request)
-    r.headers.update({"X-Content-Type-Options": "nosniff", "Referrer-Policy": "same-origin", "X-Frame-Options": "DENY"}); return r
+    r.headers.update({"X-Content-Type-Options": "nosniff", "Referrer-Policy": "same-origin", "X-Frame-Options": "DENY"})
+    if IS_PRODUCTION:
+        # Browsers honor HSTS only when the site is reached over HTTPS.
+        r.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return r
 
 def get_db():
     with SessionLocal() as s: yield s
