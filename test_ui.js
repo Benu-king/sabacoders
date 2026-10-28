@@ -142,6 +142,9 @@ async function loginUI(w,email,pw){type(w,Q(w,'input[name=email]'),email);type(w
     const progress=await (await api("/api/courses/"+journeyCourse.slug+"/curriculum","GET",undefined,V.jar.c)).json();
     ok("lesson completion is persisted and returned by a fresh curriculum request",progress.sections[0].lessons.some(x=>x.id===lesson.id&&x.completed===true));
   }
+  const V2=await open("index.html");await until(()=>QA(V2,".go").some(a=>a.getAttribute("href")==="#course/"+journeyCourse.slug));
+  const view2=QA(V2,".go").find(a=>a.getAttribute("href")==="#course/"+journeyCourse.slug);if(view2){click(V2,view2);click(V2,Q(V2,"#tabR"));type(V2,Q(V2,"#fName"),"Journey Registration");type(V2,Q(V2,"#fEmail"),"journey-new@saba.com");type(V2,Q(V2,"#fPw"),"JourneyPass123!");submit(V2,Q(V2,"#authForm"));await until(()=>V2.location.hash==="#course/"+journeyCourse.slug&&/UI Learning Journey Course/.test(txt(V2,"#courseTitle")));ok("new account creation also returns to the selected course",V2.location.hash==="#course/"+journeyCourse.slug&&/UI Learning Journey Course/.test(txt(V2,"#courseTitle")));}
+  else ok("new account creation also returns to the selected course",false);
 
   // ---- website login / logout (index.html)
   const M=await open("index.html");await until(()=>M.document.querySelectorAll("#disc .chip").length>1);
