@@ -80,6 +80,12 @@ def test_full_publishing_workflow_and_visibility(world, anon):
     cur = s1.get(f"/api/courses/{cid}/curriculum").json(); assert cur["has_access"] and cur["sections"][0]["lessons"][1]["video_url"]
     assert s1.post(f"/api/lessons/{lesson}/complete").json() == {"completed_lessons": 1, "lesson_count": 2}
     assert s1.post(f"/api/lessons/{lesson}/complete").json()["completed_lessons"] == 1                    # idempotent
+    saved = s1.get(f"/api/courses/{cid}/curriculum").json()["sections"][0]["lessons"]
+    assert saved[0]["completed"] is True and saved[1]["completed"] is False  # completion survives a fresh request
+    assert anon.get(f"/api/courses/{cid}/curriculum").json()["sections"][0]["lessons"][0]["completed"] is False  # no progress leakage
+    other = client(); other.post("/api/auth/register", json={"email": "other-student@saba.com", "name": "Other", "password": "Passw0rd!!"})
+    other.post(f"/api/courses/{cid}/enroll")
+    assert other.get(f"/api/courses/{cid}/curriculum").json()["sections"][0]["lessons"][0]["completed"] is False
     assert s1.get("/api/me/enrollments").json()[0]["completed_lessons"] == 1
     assert t1.post(f"/api/manage/courses/{cid}/unpublish").json()["status"] == "unpublished"
     assert cid not in pub(anon) and anon.get(f"/api/courses/{cid}").status_code == 404
