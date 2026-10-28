@@ -115,6 +115,30 @@ async function loginUI(w,email,pw){type(w,Q(w,'input[name=email]'),email);type(w
   click(D,btn(D,"ውጣ"));await until(()=>!!Q(D,'input[name=password]'));ok("logout returns to the login form",!!Q(D,'input[name=password]'));
   ok("after logout the same window can no longer use admin endpoints",(await D.fetch("/api/admin/users")).status===401);
 
+  // ---- end-to-end student journey: course discovery -> login -> free enrollment -> saved lesson progress
+  const created=await api("/api/manage/courses","POST",{title_en:"UI Learning Journey Course",summary_en:"Course used by automated student journey checks",category_id:1,price:0},adm);
+  const journeyCourse=await created.json();
+  const section=await (await api("/api/manage/courses/"+journeyCourse.id+"/sections","POST",{title_en:"Start here"},adm)).json();
+  const lesson=await (await api("/api/manage/sections/"+section.id+"/lessons","POST",{title_en:"First lesson",kind:"text",content_text:"Welcome to the course",duration_minutes:5},adm)).json();
+  const published=await api("/api/manage/courses/"+journeyCourse.id+"/submit","POST",{},adm);
+  ok("test course is published through the real API",published.ok);
+  const V=await open("index.html");await until(()=>QA(V,".go").length>0);
+  const view=QA(V,".go").find(a=>a.getAttribute("href")==="#course/"+journeyCourse.slug);
+  ok("published course is discoverable from Home",!!view);
+  if(view){click(V,view);ok("signed-out View Course opens the real login dialog",!Q(V,"#authForm").hidden&&!!V.location.hash===false);
+    type(V,Q(V,"#fEmail"),"stu@saba.com");type(V,Q(V,"#fPw"),"Passw0rd!!");submit(V,Q(V,"#authForm"));
+    await until(()=>V.location.hash==="#course/"+journeyCourse.slug&&/UI Learning Journey Course/.test(txt(V,"#courseTitle")));
+    ok("successful login returns to the selected course",V.location.hash==="#course/"+journeyCourse.slug&&/UI Learning Journey Course/.test(txt(V,"#courseTitle")));
+    await until(()=>!!Q(V,"#courseEnroll")&&!Q(V,"#courseBody").hidden);
+    click(V,Q(V,"#courseEnroll"));await until(()=>/Enrolled/.test(txt(V,"#courseEnroll")));
+    ok("student can enroll in the selected free course",/Enrolled/.test(txt(V,"#courseEnroll")));
+    await until(()=>QA(V,".lesson-complete").length>0);const mark=QA(V,".lesson-complete")[0];click(V,mark);
+    await until(()=>/Completed/.test(txt(V,".lesson-complete")));
+    ok("student can mark a lesson complete and receive confirmation",/Completed/.test(txt(V,".lesson-complete")));
+    const progress=await (await api("/api/courses/"+journeyCourse.slug+"/curriculum","GET",undefined,V.jar.c)).json();
+    ok("lesson completion is persisted and returned by a fresh curriculum request",progress.sections[0].lessons.some(x=>x.id===lesson.id&&x.completed===true));
+  }
+
   // ---- website login / logout (index.html)
   const M=await open("index.html");await until(()=>M.document.querySelectorAll("#disc .chip").length>1);
   click(M,QA(M,".acts [data-open]")[0]);ok("website Log in opens the real login form (not the placeholder)",!Q(M,"#authForm").hidden&&Q(M,"#authDemo").hidden);
