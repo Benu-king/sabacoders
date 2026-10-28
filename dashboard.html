@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Saba Coders · Dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;500;600;700&family=Playfair+Display:wght@500;600&family=Noto+Serif+Ethiopic:wght@500;600&display=swap">
+<style>
+:root{--bg:#060B1F;--panel:#0e1424;--ink:#EEF0F8;--muted:#9AA6C9;--gold:#C9A66B;--gold2:#E8C98B;--cyan:#7FE7FF;--line:rgba(255,255,255,.14);--ok:#4fc3a8;--bad:#ff9a9a;
+--sans:"Inter","Noto Sans Ethiopic",system-ui,sans-serif;--serif:"Playfair Display","Noto Serif Ethiopic",Georgia,serif;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:radial-gradient(80% 50% at 70% 0,#13286b,var(--bg) 60%) fixed;color:var(--ink);font-family:var(--sans);line-height:1.55;min-height:100vh;-webkit-text-size-adjust:100%}
+html[lang="am"] body{line-height:1.8}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);font-weight:500;margin:0 0 10px}
+h1{font-size:clamp(1.7rem,4vw,2.4rem)}h2{font-size:1.4rem}h3{font-size:1.1rem}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:2px;border-radius:6px}
+.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px max(16px,env(safe-area-inset-left));background:rgba(6,11,31,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--serif);font-weight:600;font-size:1.15rem;text-decoration:none;color:var(--gold2)}
+nav{display:flex;gap:4px;overflow-x:auto;max-width:100%}
+nav a{padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-size:.92rem;white-space:nowrap;min-height:44px;display:inline-flex;align-items:center}
+nav a:hover{color:#fff;background:rgba(255,255,255,.08)}nav a[aria-current]{color:#0A1230;background:var(--gold2)}
+.sp{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.page{width:min(1100px,100% - 32px);margin:28px auto 80px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,3vw,28px);margin-bottom:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--gold);background:linear-gradient(120deg,var(--gold2),var(--gold));color:#0A1230;font:600 .92rem var(--sans);cursor:pointer;text-decoration:none}
+.btn:hover{filter:brightness(1.08)}.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}.btn.ghost:hover{border-color:var(--gold)}
+.btn.bad{background:transparent;color:var(--bad);border-color:rgba(255,154,154,.5)}.btn.sm{min-height:36px;padding:0 12px;font-size:.84rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed;filter:none}
+.in{width:100%;min-height:44px;background:#080e20;border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:10px 12px;font:inherit}
+textarea.in{min-height:120px;resize:vertical}
+label{display:flex;flex-direction:column;gap:6px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+label .in{text-transform:none;letter-spacing:0;font-size:.95rem;color:var(--ink)}
+label.chk{flex-direction:row;align-items:center;text-transform:none;letter-spacing:0;font-size:.92rem;color:var(--ink);min-height:44px}
+label.chk input{width:20px;height:20px}
+fieldset{border:0;padding:0;margin:0;min-width:0}
+.stack{display:grid;gap:14px}.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px}
+.muted{color:var(--muted)}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.badge{display:inline-block;padding:3px 12px;border-radius:999px;font-size:.74rem;font-weight:600;border:1px solid var(--line)}
+.s-published{color:var(--ok);border-color:var(--ok)}.s-pending_review{color:var(--gold2);border-color:var(--gold)}.s-rejected{color:var(--bad);border-color:var(--bad)}.s-draft,.s-unpublished{color:var(--muted)}
+.cc{display:flex;flex-direction:column;gap:10px;padding:0;overflow:hidden}.cc .body{padding:16px;display:grid;gap:8px}
+.cc .th{height:140px;background:linear-gradient(135deg,#24408f,#0b1840);display:grid;place-items:center;font:700 2rem ui-monospace,monospace;color:rgba(255,255,255,.8)}
+.cc .th img{width:100%;height:100%;object-fit:cover}
+.empty{border:1px dashed rgba(255,255,255,.25);border-radius:16px;padding:32px;text-align:center;color:var(--muted)}
+.empty strong{display:block;color:var(--ink);font:500 1.3rem var(--serif);margin-bottom:6px}
+.banner{border-radius:14px;padding:14px 16px;margin-bottom:16px;border:1px solid var(--line)}.banner.bad{border-color:var(--bad);color:var(--bad)}.banner.warn{border-color:var(--gold);color:var(--gold2)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.tabs button{min-height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--muted);font:500 .9rem var(--sans);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--gold2);color:#0A1230;border-color:var(--gold2)}.tabs button[disabled]{opacity:.4;cursor:not-allowed}
+details{border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:8px 0;background:rgba(255,255,255,.02)}summary{cursor:pointer;min-height:36px;display:flex;align-items:center;gap:8px}
+.ck{display:flex;gap:10px;align-items:center;padding:6px 0}.ck i{font-style:normal;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;border:1px solid var(--line)}.ck.ok i{background:var(--ok);color:#06231c;border-color:var(--ok)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}th{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.scroll{overflow-x:auto}
+#toast{position:fixed;right:16px;bottom:16px;z-index:50;display:grid;gap:8px;max-width:min(420px,100% - 32px)}
+.t{padding:12px 16px;border-radius:12px;background:#10204f;border:1px solid var(--ok);box-shadow:0 10px 30px rgba(0,0,0,.5)}.t.err{border-color:var(--bad);background:#33121a}
+.login{max-width:420px;margin:12vh auto}
+img.prev{max-width:100%;max-height:220px;border-radius:12px;border:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="toast" aria-live="polite" role="status"></div>
+<div id="app"></div>
+<script>
+(function(){
+"use strict";
+var T={en:{dash:"Dashboard",myCourses:"My courses",allCourses:"All courses",queue:"Review queue",cats:"Categories",users:"Users",logout:"Log out",login:"Log in",email:"Email",password:"Password",loginT:"Sign in to your dashboard",
+denied:"This area is for teachers and administrators.",site:"Back to website",newCourse:"New course",createDraft:"Create draft",noCourses:"No courses yet",noCoursesD:"Create your first course to get started.",loading:"Loading…",retry:"Try again",
+draft:"Draft",pending_review:"Pending review",published:"Published",rejected:"Rejected",unpublished:"Unpublished",status:"Status",all:"All",
+sInfo:"1 · Course information",sMedia:"2 · Thumbnail and materials",sCur:"3 · Curriculum and lessons",sSubmit:"4 · Review and submit",saveFirst:"Save the course information first",
+titleEn:"Title (English)",titleAm:"Title (Amharic)",sumEn:"Short summary (English)",sumAm:"Short summary (Amharic)",descEn:"Description (English)",descAm:"Description (Amharic)",
+category:"Category",level:"Level",language:"Language",type:"Course type",price:"Price in ETB (0 = free)",save:"Save",saved:"Saved",created:"Draft created",edit:"Edit",open:"Open",review:"Review",
+thumb:"Thumbnail",thumbHint:"JPEG, PNG or WebP, up to 3 MB",noThumb:"No thumbnail yet",materials:"Learning materials",matHint:"PDF, ZIP, PNG, JPEG, WebP or text, up to 25 MB",noMat:"No materials uploaded",
+upload:"Upload",uploaded:"Uploaded",del:"Delete",deleted:"Deleted",confirmDel:"Delete this? This cannot be undone.",
+addSection:"Add section",secTitle:"Section title (English)",secTitleAm:"Section title (Amharic)",addLesson:"Add lesson",lesson:"Lesson",kind:"Lesson type",video:"Video",text:"Text",content:"Lesson content",videoUrl:"Video link (https://…)",
+minutes:"Duration (minutes)",preview:"Free preview for everyone",up:"Move up",down:"Move down",noSec:"No sections yet. Add the first section to start the curriculum.",noLes:"No lessons in this section",
+ckThumb:"A thumbnail is uploaded",ckSummary:"A short English summary is written",ckLesson:"At least one lesson exists",ckContent:"Every lesson has its content or video link",
+submit:"Submit for review",publish:"Publish now",submitted:"Submitted",submitHint:"An administrator will review your course before it goes live.",adminHint:"As an administrator you can publish directly.",
+locked:"This course is locked for editing while it is pending review or published. Unpublish it to make changes.",unpub:"Unpublish",unpubDone:"Unpublished",note:"Reviewer's note",
+approve:"Approve and publish",reject:"Reject",reason:"Reason for rejection (the teacher will see this)",approved:"Course published",rejectedDone:"Course rejected",confirmApprove:"Publish this course now?",
+noQueue:"Nothing to review",noQueueD:"No courses are waiting for review.",submittedOn:"Submitted",teachers:"Instructors",curr:"Curriculum",back:"Back",
+slug:"Slug (letters, numbers, hyphens)",nameEn:"Name (English)",nameAm:"Name (Amharic)",pos:"Order",active:"Active",addCat:"Add category",role:"Role",name:"Name",addUser:"Create account",student:"Student",teacher:"Teacher",admin:"Administrator",
+you:"you",netErr:"Cannot reach the server. Check your connection.",err:"Something went wrong",expired:"Your session has ended. Please log in again.",badFile:"Choose a JPEG, PNG or WebP image under 3 MB.",
+open2:"Open course",downloads:"Download"},
+am:{dash:"ዳሽቦርድ",myCourses:"የእኔ ኮርሶች",allCourses:"ሁሉም ኮርሶች",queue:"የግምገማ ወረፋ",cats:"ምድቦች",users:"ተጠቃሚዎች",logout:"ውጣ",login:"ግባ",email:"ኢሜይል",password:"የይለፍ ቃል",loginT:"ወደ ዳሽቦርድዎ ይግቡ",
+denied:"ይህ ክፍል ለመምህራንና ለአስተዳዳሪዎች ብቻ ነው።",site:"ወደ ድረ-ገጹ ተመለስ",newCourse:"አዲስ ኮርስ",createDraft:"ረቂቅ ፍጠር",noCourses:"እስካሁን ኮርስ የለም",noCoursesD:"ለመጀመር የመጀመሪያ ኮርስዎን ይፍጠሩ።",loading:"በመጫን ላይ…",retry:"እንደገና ሞክር",
+draft:"ረቂቅ",pending_review:"በግምገማ ላይ",published:"የታተመ",rejected:"ውድቅ የተደረገ",unpublished:"ያልታተመ",status:"ሁኔታ",all:"ሁሉም",
+sInfo:"1 · የኮርስ መረጃ",sMedia:"2 · ምስልና ማቴሪያሎች",sCur:"3 · ሥርዓተ ትምህርትና ትምህርቶች",sSubmit:"4 · ግምገማና ማቅረብ",saveFirst:"መጀመሪያ የኮርሱን መረጃ ያስቀምጡ",
+titleEn:"ርዕስ (እንግሊዝኛ)",titleAm:"ርዕስ (አማርኛ)",sumEn:"አጭር ማጠቃለያ (እንግሊዝኛ)",sumAm:"አጭር ማጠቃለያ (አማርኛ)",descEn:"መግለጫ (እንግሊዝኛ)",descAm:"መግለጫ (አማርኛ)",
+category:"ምድብ",level:"ደረጃ",language:"ቋንቋ",type:"የኮርስ አይነት",price:"ዋጋ በብር (0 = ነጻ)",save:"አስቀምጥ",saved:"ተቀምጧል",created:"ረቂቅ ተፈጥሯል",edit:"አርም",open:"ክፈት",review:"ገምግም",
+thumb:"ድንክዬ ምስል",thumbHint:"JPEG፣ PNG ወይም WebP፣ እስከ 3 ሜባ",noThumb:"እስካሁን ምስል የለም",materials:"የመማሪያ ማቴሪያሎች",matHint:"PDF፣ ZIP፣ PNG፣ JPEG፣ WebP ወይም ጽሑፍ፣ እስከ 25 ሜባ",noMat:"ምንም ማቴሪያል አልተሰቀለም",
+upload:"ስቀል",uploaded:"ተሰቅሏል",del:"ሰርዝ",deleted:"ተሰርዟል",confirmDel:"ይህን መሰረዝ ይፈልጋሉ? መመለስ አይቻልም።",
+addSection:"ክፍል ጨምር",secTitle:"የክፍል ርዕስ (እንግሊዝኛ)",secTitleAm:"የክፍል ርዕስ (አማርኛ)",addLesson:"ትምህርት ጨምር",lesson:"ትምህርት",kind:"የትምህርት አይነት",video:"ቪዲዮ",text:"ጽሑፍ",content:"የትምህርት ይዘት",videoUrl:"የቪዲዮ ሊንክ (https://…)",
+minutes:"ርዝመት (ደቂቃ)",preview:"ለሁሉም ነጻ ቅድመ እይታ",up:"ወደ ላይ",down:"ወደ ታች",noSec:"እስካሁን ክፍል የለም። ሥርዓተ ትምህርቱን ለመጀመር የመጀመሪያውን ክፍል ይጨምሩ።",noLes:"በዚህ ክፍል ትምህርት የለም",
+ckThumb:"ድንክዬ ምስል ተሰቅሏል",ckSummary:"አጭር የእንግሊዝኛ ማጠቃለያ ተጽፏል",ckLesson:"ቢያንስ አንድ ትምህርት አለ",ckContent:"እያንዳንዱ ትምህርት ይዘት ወይም የቪዲዮ ሊንክ አለው",
+submit:"ለግምገማ አቅርብ",publish:"አሁን አትም",submitted:"ቀርቧል",submitHint:"ኮርሱ ከመታተሙ በፊት አስተዳዳሪ ይገመግመዋል።",adminHint:"እንደ አስተዳዳሪ በቀጥታ ማተም ይችላሉ።",
+locked:"ኮርሱ በግምገማ ላይ ወይም የታተመ ስለሆነ ማስተካከል አይቻልም። ለመቀየር መጀመሪያ ያውርዱት።",unpub:"አውርድ",unpubDone:"ወርዷል",note:"የገምጋሚው ማስታወሻ",
+approve:"ፍቀድና አትም",reject:"ውድቅ አድርግ",reason:"የውድቅ ምክንያት (መምህሩ ያየዋል)",approved:"ኮርሱ ታትሟል",rejectedDone:"ኮርሱ ውድቅ ተደርጓል",confirmApprove:"ይህን ኮርስ አሁን ማተም ይፈልጋሉ?",
+noQueue:"የሚገመገም ነገር የለም",noQueueD:"ግምገማ የሚጠብቅ ኮርስ የለም።",submittedOn:"የቀረበበት",teachers:"መምህራን",curr:"ሥርዓተ ትምህርት",back:"ተመለስ",
+slug:"ስሉግ (ፊደል፣ ቁጥርና ሰረዝ)",nameEn:"ስም (እንግሊዝኛ)",nameAm:"ስም (አማርኛ)",pos:"ቅደም ተከተል",active:"ንቁ",addCat:"ምድብ ጨምር",role:"ሚና",name:"ስም",addUser:"መለያ ፍጠር",student:"ተማሪ",teacher:"መምህር",admin:"አስተዳዳሪ",
+you:"እርስዎ",netErr:"አገልጋዩን ማግኘት አልተቻለም። ግንኙነትዎን ያረጋግጡ።",err:"የሆነ ችግር ተፈጥሯል",expired:"ክፍለ ጊዜዎ አብቅቷል። እባክዎ እንደገና ይግቡ።",badFile:"ከ3 ሜባ በታች የሆነ JPEG፣ PNG ወይም WebP ምስል ይምረጡ።",
+open2:"ኮርሱን ክፈት",downloads:"አውርድ"}};
+var lang="en";try{if(localStorage.getItem("saba_lang")==="am")lang="am"}catch(e){}
+function t(k){return(T[lang]&&T[lang][k])||T.en[k]||k}
+var $=function(s){return document.querySelector(s)};
+function h(tag,a){var e=document.createElement(tag);a=a||{};for(var k in a){var v=a[k];if(k==="class")e.className=v;else if(k.slice(0,2)==="on")e.addEventListener(k.slice(2),v);else if(v===true)e.setAttribute(k,"");else if(v!==false&&v!=null)e.setAttribute(k,v)}
+ [].slice.call(arguments,2).forEach(function add(c){if(Array.isArray(c))return c.forEach(add);if(c==null||c===false)return;e.append(c.nodeType?c:document.createTextNode(String(c)))});return e}
+var me,notice="",C=null,TAB="info",cats=[];
+function toast(msg,bad){var d=h("div",{class:"t"+(bad?" err":""),role:bad?"alert":null},msg);$("#toast").append(d);setTimeout(function(){d.remove()},bad?9000:3500)}
+function errText(d,s){var x=d&&d.detail;if(typeof x==="string")return x;if(Array.isArray(x))return x.map(function(i){return((i.loc||[]).slice(-1)[0]||"")+": "+i.msg}).join("; ");if(x&&x.problems)return x.message+": "+x.problems.join("; ");return t("err")+" ("+s+")"}
+async function api(path,o){o=o||{};var init={method:o.method||"GET",credentials:"same-origin",headers:{"X-Requested-With":"saba"}};
+ if(o.json!==undefined){init.headers["Content-Type"]="application/json";init.body=JSON.stringify(o.json)}if(o.form)init.body=o.form;
+ var r;try{r=await fetch(path,init)}catch(e){throw new Error(t("netErr"))}
+ var d=null;try{d=await r.json()}catch(e){}
+ if(!r.ok){if(r.status===401&&!o.quiet&&me){me=null;notice=t("expired");render()}throw new Error(errText(d,r.status))}return d}
+async function act(fn,ok){try{await fn();if(ok)toast(ok);return true}catch(e){toast(e.message,true);return false}}
+function F(label,input){return h("label",{},label,input)}
+function loadingEl(){return h("p",{class:"muted",role:"status"},t("loading"))}
+function errEl(e,retry){return h("div",{class:"banner bad",role:"alert"},e.message+" ",h("button",{class:"btn ghost sm",type:"button",onclick:retry},t("retry")))}
+function empty(a,b){return h("div",{class:"empty"},h("strong",{},a),b)}
+function badge(s){return h("span",{class:"badge s-"+s},t(s))}
+function go(x){if(location.hash==="#"+x)render();else location.hash=x}
+function opt(v,l,sel){return h("option",{value:v,selected:sel},l)}
+function logoutBtn(){return h("button",{class:"btn ghost sm",type:"button",onclick:async function(){await act(function(){return api("/api/auth/logout",{method:"POST"})});me=null;notice="";render()}},t("logout"))}
+function langBtn(){return h("button",{class:"btn ghost sm",type:"button",onclick:function(){lang=lang==="en"?"am":"en";try{localStorage.setItem("saba_lang",lang)}catch(e){}document.documentElement.lang=lang;render()}},lang==="en"?"አማ":"EN")}
+
+function loginView(){
+ var err=h("p",{role:"alert",style:"color:var(--bad);min-height:1.4em;margin:0"},notice);
+ var f=h("form",{class:"stack",onsubmit:async function(e){e.preventDefault();if(!f.reportValidity())return;err.textContent="";
+   try{me=await api("/api/auth/login",{method:"POST",json:{email:f.elements.email.value,password:f.elements.password.value},quiet:true});notice="";render()}catch(x){err.textContent=x.message}}},
+  F(t("email"),h("input",{class:"in",name:"email",type:"email",required:true,autocomplete:"username",maxlength:255})),
+  F(t("password"),h("input",{class:"in",name:"password",type:"password",required:true,minlength:8,autocomplete:"current-password",maxlength:128})),err,
+  h("button",{class:"btn",type:"submit"},t("login")));
+ return h("div",{class:"page login"},h("div",{class:"card"},h("p",{class:"muted"},h("a",{href:"/"},"← "+t("site"))),h("h1",{},t("loginT")),f,h("div",{class:"row",style:"margin-top:14px"},langBtn())))}
+
+function shell(view,main){
+ var nav=[["courses",me.role==="admin"?t("allCourses"):t("myCourses")]];
+ if(me.role==="admin")nav.push(["queue",t("queue")],["cats",t("cats")],["users",t("users")]);
+ return h("div",{},h("header",{class:"top"},h("a",{class:"brand",href:"#courses"},"Saba Coders · "+t("dash")),
+  h("nav",{"aria-label":"Dashboard"},nav.map(function(n){return h("a",{href:"#"+n[0],"aria-current":view===n[0]?"page":null,onclick:function(e){if(location.hash==="#"+n[0]){e.preventDefault();render()}}},n[1])})),
+  h("div",{class:"sp"},h("span",{class:"muted"},me.name+" ("+t(me.role)+")"),h("a",{class:"btn ghost sm",href:"/"},t("site")),langBtn(),logoutBtn())),
+  h("main",{class:"page"},main))}
+
+var rid=0;
+async function render(){
+ var my=++rid,app=$("#app");document.documentElement.lang=lang;
+ if(me===undefined){try{me=await api("/api/auth/me",{quiet:true})}catch(e){me=null}if(my!==rid)return}
+ if(!me){app.replaceChildren(loginView());return}
+ if(me.role==="student"){app.replaceChildren(h("div",{class:"page login"},h("div",{class:"card"},h("h1",{},t("denied")),h("div",{class:"row"},h("a",{class:"btn",href:"/"},t("site")),logoutBtn()))));return}
+ var m=(location.hash.slice(1)||"courses").split(/-(.+)/),view=m[0],arg=m[1];
+ if(me.role!=="admin"&&["queue","cats","users","review"].indexOf(view)>=0){go("courses");return}
+ var fn={courses:viewCourses,new:function(){return viewEdit(null)},edit:function(){return viewEdit(arg)},queue:viewQueue,review:function(){return viewReview(arg)},cats:viewCats,users:viewUsers}[view]||viewCourses;
+ app.replaceChildren(shell(view,loadingEl()));
+ try{var v=await fn();if(my!==rid)return;app.replaceChildren(shell(view,v))}catch(e){if(my!==rid)return;app.replaceChildren(shell(view,errEl(e,render)))}}
+
+/* ---------- course lists ---------- */
+function courseCard(c){
+ var th=h("div",{class:"th"},c.thumbnail_url?h("img",{src:c.thumbnail_url,alt:"",loading:"lazy"}):(c.title_en||"?").slice(0,2).toUpperCase());
+ return h("article",{class:"card cc"},th,h("div",{class:"body"},h("div",{class:"row"},badge(c.status)),h("h3",{style:"margin:0"},c.title_en),
+  h("div",{class:"muted"},c.category.name_en+" · "+c.level+" · "+(c.price?c.price+" ETB":"Free")+(me.role==="admin"&&c.instructors.length?" · "+c.instructors.map(function(i){return i.name}).join(", "):"")),
+  c.status==="rejected"&&c.review_note?h("div",{class:"banner bad"},t("note")+": "+c.review_note):null,
+  h("div",{class:"row"},h("a",{class:"btn sm",href:"#edit-"+c.id},t(me.role==="admin"?"open":"edit")),me.role==="admin"&&c.status==="pending_review"?h("a",{class:"btn ghost sm",href:"#review-"+c.id},t("review")):null)))}
+async function viewCourses(){
+ var box=h("div"),st=h("select",{class:"in","aria-label":t("status"),style:"max-width:220px",onchange:load},opt("",t("all")),["draft","pending_review","published","rejected","unpublished"].map(function(s){return opt(s,t(s))}));
+ async function load(){box.replaceChildren(loadingEl());try{var l=await api("/api/manage/courses"+(st.value?"?status="+st.value:""));box.replaceChildren(l.length?h("div",{class:"grid"},l.map(courseCard)):empty(t("noCourses"),t("noCoursesD")))}catch(e){box.replaceChildren(errEl(e,load))}}
+ await load();
+ return h("div",{},h("div",{class:"row",style:"justify-content:space-between;margin-bottom:16px"},h("h1",{style:"margin:0"},me.role==="admin"?t("allCourses"):t("myCourses")),h("div",{class:"row"},st,h("a",{class:"btn",href:"#new"},"+ "+t("newCourse")))),box)}
+
+/* ---------- course editor ---------- */
+function canEdit(){return !C||me.role==="admin"||["draft","rejected","unpublished"].indexOf(C.status)>=0}
+async function reload(){C=await api("/api/manage/courses/"+C.id)}
+async function viewEdit(id){
+ cats=await api("/api/categories");C=id?await api("/api/manage/courses/"+id):null;if(!id)TAB="info";
+ var root=h("div");
+ function draw(){root.replaceChildren.apply(root,[head()].concat(banners(),[tabs(),panel()]))}
+ function head(){return h("div",{class:"row",style:"margin-bottom:12px"},h("a",{class:"btn ghost sm",href:"#courses"},"← "+t("back")),h("h1",{style:"margin:0"},C?C.title_en:t("newCourse")),C?badge(C.status):null)}
+ function banners(){var x=[];if(C&&C.status==="rejected"&&C.review_note)x.push(h("div",{class:"banner bad",role:"alert"},h("strong",{},t("note")+": "),C.review_note));
+  if(C&&!canEdit()){x.push(h("div",{class:"banner warn"},t("locked")+" ",h("button",{class:"btn ghost sm",type:"button",onclick:async function(){if(await act(function(){return api("/api/manage/courses/"+C.id+"/unpublish",{method:"POST"})},t("unpubDone"))){await reload();draw()}}},t("unpub"))))}return x}
+ function tabs(){var d=[["info","sInfo"],["media","sMedia"],["cur","sCur"],["submit","sSubmit"]];
+  return h("div",{class:"tabs",role:"tablist"},d.map(function(x){return h("button",{type:"button",role:"tab","aria-selected":String(TAB===x[0]),disabled:!C&&x[0]!=="info",title:!C&&x[0]!=="info"?t("saveFirst"):null,onclick:function(){TAB=x[0];draw()}},t(x[1]))}))}
+ function panel(){return h("div",{class:"card"},TAB==="info"?infoP():TAB==="media"?mediaP():TAB==="cur"?curP():submitP())}
+ async function refresh(msg){if(await act(reload,msg))draw()}
+ function infoP(){
+  var f=h("form",{class:"stack",onsubmit:async function(e){e.preventDefault();if(!f.reportValidity())return;var d=Object.fromEntries(new FormData(f));d.price=+d.price||0;d.category_id=+d.category_id;
+    try{if(C){C=await api("/api/manage/courses/"+C.id,{method:"PATCH",json:d});toast(t("saved"));draw()}else{var n=await api("/api/manage/courses",{method:"POST",json:d});toast(t("created"));TAB="media";go("edit-"+n.id)}}catch(x){toast(x.message,true)}}},
+   h("fieldset",{class:"stack",disabled:!canEdit()},
+    h("div",{class:"g2"},F(t("titleEn"),h("input",{class:"in",name:"title_en",required:true,minlength:3,maxlength:160,value:C?C.title_en:""})),F(t("titleAm"),h("input",{class:"in",name:"title_am",maxlength:160,value:C?C.title_am:""}))),
+    h("div",{class:"g2"},F(t("sumEn"),h("textarea",{class:"in",name:"summary_en",maxlength:400,style:"min-height:80px"},C?C.summary_en:"")),F(t("sumAm"),h("textarea",{class:"in",name:"summary_am",maxlength:400,style:"min-height:80px"},C?C.summary_am:""))),
+    h("div",{class:"g2"},F(t("descEn"),h("textarea",{class:"in",name:"description_en",maxlength:10000},C?C.description_en:"")),F(t("descAm"),h("textarea",{class:"in",name:"description_am",maxlength:10000},C?C.description_am:""))),
+    h("div",{class:"g2"},F(t("category"),h("select",{class:"in",name:"category_id",required:true},cats.map(function(c){return opt(c.id,lang==="am"&&c.name_am?c.name_am:c.name_en,C&&C.category.id===c.id)}))),
+     F(t("level"),h("select",{class:"in",name:"level"},["Beginner","Intermediate","Advanced"].map(function(v){return opt(v,v,C&&C.level===v)}))),
+     F(t("language"),h("select",{class:"in",name:"language"},[["en","English"],["am","አማርኛ"],["both","English + አማርኛ"]].map(function(v){return opt(v[0],v[1],C&&C.language===v[0])}))),
+     F(t("type"),h("select",{class:"in",name:"course_type"},[["video",t("video")],["text",t("text")],["mixed",t("video")+" + "+t("text")]].map(function(v){return opt(v[0],v[1],C?C.course_type===v[0]:v[0]==="mixed")}))),
+     F(t("price"),h("input",{class:"in",name:"price",type:"number",min:0,max:10000000,step:1,value:C?C.price:0}))),
+    h("div",{},h("button",{class:"btn",type:"submit"},C?t("save"):t("createDraft")))));
+  return f}
+ function pick(input,max,types,fn){input.addEventListener("change",async function(){var f=input.files&&input.files[0];if(!f)return;
+  if(f.size>max||(types&&types.indexOf(f.type)<0)){toast(t("badFile"),true);input.value="";return}
+  var fd=new FormData();fd.append("file",f);if(await act(function(){return api(fn,{method:"POST",form:fd})},t("uploaded")))await refresh()})}
+ function mediaP(){
+  var ti=h("input",{class:"in",type:"file",accept:"image/jpeg,image/png,image/webp","aria-label":t("thumb"),disabled:!canEdit()});pick(ti,3*1024*1024,["image/jpeg","image/png","image/webp"],"/api/manage/courses/"+C.id+"/thumbnail");
+  var mi=h("input",{class:"in",type:"file","aria-label":t("materials"),disabled:!canEdit()});pick(mi,25*1024*1024,null,"/api/manage/courses/"+C.id+"/materials");
+  return h("div",{class:"stack"},h("h2",{},t("thumb")),C.thumbnail_url?h("img",{class:"prev",src:C.thumbnail_url+"?v="+Date.now(),alt:""}):h("p",{class:"muted"},t("noThumb")),h("p",{class:"muted",style:"margin:0"},t("thumbHint")),ti,
+   h("h2",{style:"margin-top:18px"},t("materials")),h("p",{class:"muted",style:"margin:0"},t("matHint")),mi,
+   C.materials.length?C.materials.map(function(m){return h("div",{class:"row"},h("a",{href:"/api/materials/"+m.id,target:"_blank",rel:"noopener"},m.filename),h("span",{class:"muted"},Math.max(1,Math.round(m.size/1024))+" KB"),
+    canEdit()?h("button",{class:"btn bad sm",type:"button",onclick:async function(){if(confirm(t("confirmDel"))&&await act(function(){return api("/api/manage/materials/"+m.id,{method:"DELETE"})},t("deleted")))await refresh()}},t("del")):null)}):h("p",{class:"muted"},t("noMat")))}
+ function swap(list,i,j,url){var a=list[i],b=list[j];return act(async function(){await api(url(a),{method:"PATCH",json:{position:b.position}});await api(url(b),{method:"PATCH",json:{position:a.position}})}).then(function(ok){return ok&&refresh()})}
+ function lessonForm(sec,l){
+  var f=h("form",{class:"stack",onsubmit:async function(e){e.preventDefault();if(!f.reportValidity())return;var d=Object.fromEntries(new FormData(f));d.is_preview=f.elements.is_preview.checked;d.duration_minutes=+d.duration_minutes||0;
+    if(await act(function(){return l?api("/api/manage/lessons/"+l.id,{method:"PATCH",json:d}):api("/api/manage/sections/"+sec.id+"/lessons",{method:"POST",json:d})},t("saved")))await refresh()}},
+   h("div",{class:"g2"},F(t("titleEn"),h("input",{class:"in",name:"title_en",required:true,maxlength:160,value:l?l.title_en:""})),F(t("titleAm"),h("input",{class:"in",name:"title_am",maxlength:160,value:l?l.title_am:""}))),
+   h("div",{class:"g2"},F(t("kind"),h("select",{class:"in",name:"kind"},[["text",t("text")],["video",t("video")]].map(function(v){return opt(v[0],v[1],l&&l.kind===v[0])}))),F(t("minutes"),h("input",{class:"in",name:"duration_minutes",type:"number",min:0,max:1000,value:l?l.duration_minutes:0}))),
+   F(t("content"),h("textarea",{class:"in",name:"content_text",maxlength:50000},l?l.content_text:"")),F(t("videoUrl"),h("input",{class:"in",name:"video_url",type:"url",maxlength:500,pattern:"https://.*",value:l?l.video_url:""})),
+   h("label",{class:"chk"},h("input",{type:"checkbox",name:"is_preview",checked:!!(l&&l.is_preview)}),t("preview")),h("div",{class:"row"},h("button",{class:"btn sm",type:"submit"},l?t("save"):t("addLesson")),
+   l?h("button",{class:"btn bad sm",type:"button",onclick:async function(){if(confirm(t("confirmDel"))&&await act(function(){return api("/api/manage/lessons/"+l.id,{method:"DELETE"})},t("deleted")))await refresh()}},t("del")):null));
+  return f}
+ function curP(){
+  var ed=canEdit(),secs=C.sections;
+  var out=[secs.length?null:h("p",{class:"muted"},t("noSec"))];
+  secs.forEach(function(s,si){
+   var name=h("input",{class:"in","aria-label":t("secTitle"),value:s.title_en,maxlength:160,disabled:!ed});
+   out.push(h("div",{class:"card",style:"background:rgba(255,255,255,.02)"},h("div",{class:"row"},h("div",{style:"flex:1;min-width:200px"},name),
+    ed?[h("button",{class:"btn sm",type:"button",onclick:function(){if(name.value.trim())act(function(){return api("/api/manage/sections/"+s.id,{method:"PATCH",json:{title_en:name.value}})},t("saved")).then(refresh)}},t("save")),
+     h("button",{class:"btn ghost sm",type:"button",disabled:si===0,"aria-label":t("up"),onclick:function(){swap(secs,si,si-1,function(x){return"/api/manage/sections/"+x.id})}},"↑"),
+     h("button",{class:"btn ghost sm",type:"button",disabled:si===secs.length-1,"aria-label":t("down"),onclick:function(){swap(secs,si,si+1,function(x){return"/api/manage/sections/"+x.id})}},"↓"),
+     h("button",{class:"btn bad sm",type:"button",onclick:async function(){if(confirm(t("confirmDel"))&&await act(function(){return api("/api/manage/sections/"+s.id,{method:"DELETE"})},t("deleted")))await refresh()}},t("del"))]:null),
+    s.lessons.length?null:h("p",{class:"muted"},t("noLes")),
+    s.lessons.map(function(l,li){return h("details",{},h("summary",{},(li+1)+". "+l.title_en+" ",h("span",{class:"badge"},t(l.kind))),
+      ed?h("div",{class:"row",style:"margin:6px 0"},h("button",{class:"btn ghost sm",type:"button",disabled:li===0,"aria-label":t("up"),onclick:function(){swap(s.lessons,li,li-1,function(x){return"/api/manage/lessons/"+x.id})}},"↑"),
+       h("button",{class:"btn ghost sm",type:"button",disabled:li===s.lessons.length-1,"aria-label":t("down"),onclick:function(){swap(s.lessons,li,li+1,function(x){return"/api/manage/lessons/"+x.id})}},"↓")):null,
+      h("fieldset",{disabled:!ed},lessonForm(s,l)))}),
+    ed?h("details",{},h("summary",{},"+ "+t("addLesson")),lessonForm(s,null)):null))});
+  if(ed){var a=h("input",{class:"in",name:"title_en",required:true,maxlength:160}),b=h("input",{class:"in",name:"title_am",maxlength:160});
+   var f=h("form",{class:"stack",onsubmit:async function(e){e.preventDefault();if(!f.reportValidity())return;if(await act(function(){return api("/api/manage/courses/"+C.id+"/sections",{method:"POST",json:{title_en:a.value,title_am:b.value}})},t("saved")))await refresh()}},
+    h("div",{class:"g2"},F(t("secTitle"),a),F(t("secTitleAm"),b)),h("div",{},h("button",{class:"btn",type:"submit"},"+ "+t("addSection"))));out.push(f)}
+  return h("div",{},out)}
+ function submitP(){
+  var ls=C.sections.reduce(function(a,s){return a.concat(s.lessons)},[]);
+  var ck=[[t("ckThumb"),!!C.thumbnail_url],[t("ckSummary"),!!C.summary_en.trim()],[t("ckLesson"),ls.length>0],[t("ckContent"),ls.length>0&&ls.every(function(l){return l.kind==="video"?!!l.video_url:!!l.content_text.trim()})]];
+  var ready=ck.every(function(x){return x[1]}),adm=me.role==="admin";
+  return h("div",{class:"stack"},h("h2",{},t("sSubmit")),ck.map(function(x){return h("div",{class:"ck"+(x[1]?" ok":"")},h("i",{"aria-hidden":"true"},x[1]?"✓":""),x[0])}),h("p",{class:"muted"},adm?t("adminHint"):t("submitHint")),
+   h("div",{},h("button",{class:"btn",type:"button",disabled:!ready||!canEdit(),onclick:async function(){if(await act(function(){return api("/api/manage/courses/"+C.id+"/submit",{method:"POST"})},t("submitted"))){await refresh();}}},adm?t("publish"):t("submit"))))}
+ draw();return root}
+
+/* ---------- admin ---------- */
+async function viewQueue(){
+ var l=await api("/api/admin/review-queue");
+ return h("div",{},h("h1",{},t("queue")),l.length?h("div",{class:"grid"},l.map(function(c){return h("article",{class:"card"},badge(c.status),h("h3",{style:"margin:8px 0"},c.title_en),
+  h("p",{class:"muted"},c.category.name_en+" · "+c.level+" · "+c.lesson_count+" · "+(c.instructors.map(function(i){return i.name}).join(", ")||"—")),h("a",{class:"btn sm",href:"#review-"+c.id},t("review")))})):empty(t("noQueue"),t("noQueueD")))}
+async function viewReview(id){
+ var c=await api("/api/manage/courses/"+id);
+ function done(msg){toast(msg);go("queue")}
+ var reason=h("textarea",{class:"in",name:"note",required:true,minlength:3,maxlength:2000,"aria-label":t("reason")});
+ var rf=h("form",{class:"stack",onsubmit:async function(e){e.preventDefault();if(!rf.reportValidity())return;if(await act(function(){return api("/api/admin/courses/"+c.id+"/reject",{method:"POST",json:{note:reason.value}})}))done(t("rejectedDone"))}},F(t("reason"),reason),h("div",{},h("button",{class:"btn bad",type:"submit"},t("reject"))));
+ var acts=[];
+ if(c.status==="pending_review"||c.status==="unpublished")acts.push(h("button",{class:"btn",type:"button",onclick:async function(){if(confirm(t("confirmApprove"))&&await act(function(){return api("/api/admin/courses/"+c.id+"/approve",{method:"POST"})}))done(t("approved"))}},t("approve")));
+ if(c.status==="published")acts.push(h("button",{class:"btn bad",type:"button",onclick:async function(){if(await act(function(){return api("/api/manage/courses/"+c.id+"/unpublish",{method:"POST"})}))done(t("unpubDone"))}},t("unpub")));
+ return h("div",{},h("div",{class:"row",style:"margin-bottom:12px"},h("a",{class:"btn ghost sm",href:"#queue"},"← "+t("back")),h("h1",{style:"margin:0"},c.title_en),badge(c.status)),
+  h("div",{class:"card"},c.thumbnail_url?h("img",{class:"prev",src:c.thumbnail_url,alt:""}):h("p",{class:"muted"},t("noThumb")),h("p",{class:"muted"},c.category.name_en+" · "+c.level+" · "+c.language+" · "+c.course_type+" · "+(c.price?c.price+" ETB":"Free")),
+   h("p",{},t("teachers")+": "+(c.instructors.map(function(i){return i.name}).join(", ")||"—")),h("p",{},c.summary_en),h("p",{style:"white-space:pre-wrap"},c.description_en),c.title_am?h("p",{class:"muted"},c.title_am):null),
+  h("div",{class:"card"},h("h2",{},t("curr")),c.sections.map(function(s){return h("div",{},h("h3",{},s.title_en),s.lessons.map(function(l){return h("details",{},h("summary",{},l.title_en+" ",h("span",{class:"badge"},t(l.kind)+" · "+l.duration_minutes+" min")),
+    l.kind==="video"?h("p",{},h("a",{href:l.video_url,target:"_blank",rel:"noopener noreferrer"},l.video_url)):h("p",{style:"white-space:pre-wrap"},l.content_text))}))}),
+   h("h2",{style:"margin-top:20px"},t("materials")),c.materials.length?c.materials.map(function(m){return h("div",{},h("a",{href:"/api/materials/"+m.id,target:"_blank",rel:"noopener"},t("downloads")+": "+m.filename))}):h("p",{class:"muted"},t("noMat"))),
+  h("div",{class:"card"},h("div",{class:"row"},acts,h("a",{class:"btn ghost",href:"#edit-"+c.id},t("open2"))),c.status==="pending_review"?h("div",{style:"margin-top:18px"},rf):null))}
+async function viewCats(){
+ var l=await api("/api/admin/categories");
+ function row(c){var o={slug:h("input",{class:"in",value:c?c.slug:"",required:true,pattern:"[a-z0-9-]{2,80}","aria-label":t("slug")}),en:h("input",{class:"in",value:c?c.name_en:"",required:true,minlength:2,"aria-label":t("nameEn")}),am:h("input",{class:"in",value:c?c.name_am:"","aria-label":t("nameAm")}),
+   pos:h("input",{class:"in",type:"number",value:c?c.position:l.length,"aria-label":t("pos"),style:"max-width:90px"}),on:h("input",{type:"checkbox",checked:c?c.is_active:true,"aria-label":t("active")})};
+  var f=h("form",{class:"row",style:"align-items:flex-end",onsubmit:async function(e){e.preventDefault();if(!f.reportValidity())return;var d={slug:o.slug.value,name_en:o.en.value,name_am:o.am.value,position:+o.pos.value||0,is_active:o.on.checked};
+    if(await act(function(){return c?api("/api/admin/categories/"+c.id,{method:"PATCH",json:d}):api("/api/admin/categories",{method:"POST",json:d})},t("saved")))render()}},
+   h("div",{style:"flex:1;min-width:140px"},o.slug),h("div",{style:"flex:1;min-width:160px"},o.en),h("div",{style:"flex:1;min-width:160px"},o.am),o.pos,h("label",{class:"chk"},o.on,t("active")),h("button",{class:"btn sm",type:"submit"},c?t("save"):t("addCat")));return f}
+ return h("div",{},h("h1",{},t("cats")),h("div",{class:"card stack"},l.map(row)),h("div",{class:"card"},h("h2",{},t("addCat")),row(null)))}
+async function viewUsers(){
+ var l=await api("/api/admin/users");
+ var rows=l.map(function(u){var self=u.id===me.id,sel=h("select",{class:"in","aria-label":t("role"),disabled:self,onchange:function(){act(function(){return api("/api/admin/users/"+u.id,{method:"PATCH",json:{role:sel.value}})},t("saved")).then(render)}},["student","teacher","admin"].map(function(r){return opt(r,t(r),u.role===r)}));
+  var on=h("input",{type:"checkbox",checked:u.is_active,disabled:self,"aria-label":t("active"),onchange:function(){act(function(){return api("/api/admin/users/"+u.id,{method:"PATCH",json:{is_active:on.checked}})},t("saved")).then(render)}});
+  return h("tr",{},h("td",{},u.name+(self?" ("+t("you")+")":"")),h("td",{},u.email),h("td",{},sel),h("td",{},on))});
+ var f=h("form",{class:"stack",onsubmit:async function(e){e.preventDefault();if(!f.reportValidity())return;if(await act(function(){return api("/api/admin/users",{method:"POST",json:{name:f.elements["name"].value,email:f.elements.email.value,password:f.elements.password.value,role:f.elements.role.value}})},t("saved")))render()}},
+  h("div",{class:"g2"},F(t("name"),h("input",{class:"in",name:"name",required:true,maxlength:120})),F(t("email"),h("input",{class:"in",name:"email",type:"email",required:true,maxlength:255})),F(t("password"),h("input",{class:"in",name:"password",type:"password",required:true,minlength:8,maxlength:128,autocomplete:"new-password"})),
+   F(t("role"),h("select",{class:"in",name:"role"},["teacher","student","admin"].map(function(r){return opt(r,t(r))})))),h("div",{},h("button",{class:"btn",type:"submit"},t("addUser"))));
+ return h("div",{},h("h1",{},t("users")),h("div",{class:"card scroll"},h("table",{},h("thead",{},h("tr",{},h("th",{},t("name")),h("th",{},t("email")),h("th",{},t("role")),h("th",{},t("active")))),h("tbody",{},rows))),h("div",{class:"card"},h("h2",{},t("addUser")),f))}
+
+window.addEventListener("hashchange",render);render();
+})();
+</script>
+</body>
+</html>
