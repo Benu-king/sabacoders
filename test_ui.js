@@ -120,6 +120,9 @@ async function loginUI(w,email,pw){type(w,Q(w,'input[name=email]'),email);type(w
   const journeyCourse=await created.json();
   const section=await (await api("/api/manage/courses/"+journeyCourse.id+"/sections","POST",{title_en:"Start here"},adm)).json();
   const lesson=await (await api("/api/manage/sections/"+section.id+"/lessons","POST",{title_en:"First lesson",kind:"text",content_text:"Welcome to the course",duration_minutes:5},adm)).json();
+  const thumbForm=new FormData();thumbForm.append("file",new Blob([PNG],{type:"image/png"}),"journey.png");
+  const thumbResponse=await fetch(B+"/api/manage/courses/"+journeyCourse.id+"/thumbnail",{method:"POST",headers:{"X-Requested-With":"saba",Cookie:adm},body:thumbForm});
+  ok("test course thumbnail upload succeeds",thumbResponse.ok);
   const published=await api("/api/manage/courses/"+journeyCourse.id+"/submit","POST",{},adm);
   ok("test course is published through the real API",published.ok);
   const V=await open("index.html");await until(()=>QA(V,".go").length>0);
