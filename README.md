@@ -54,3 +54,34 @@ Course Details page, lesson player, quizzes, paid checkout (paid enrolment retur
 
 ## Before production
 PostgreSQL (`schema.sql`), HTTPS with `COOKIE_SECURE=1`, object storage instead of local `uploads/`, a reverse proxy, backups, rate limiting that survives restarts and multiple workers.
+
+
+## Student learning journey and test commands
+
+The student journey uses the existing course, enrollment, lesson, and progress tables. Run backend tests and the browser-simulation integration suite before deploying:
+
+```bash
+python -m pip install -r requirements-dev.txt
+pytest -q test_app.py
+npm install --no-save jsdom
+node test_ui.js
+```
+
+GitHub Actions runs these checks on pushes to `main` and pull requests. A green CI run verifies only the tested code paths in CI; it does not prove that a production host, HTTPS, PostgreSQL, backups, or real browsers are configured correctly.
+
+## Production environment
+
+**Do not launch with the development defaults.** Configure the host's secret/environment settings before starting the app:
+
+- `APP_ENV=production`
+- `DATABASE_URL` — PostgreSQL connection string; production mode refuses a missing URL or SQLite.
+- `COOKIE_SECURE=1` — required in production; serve the site over HTTPS.
+- `UPLOAD_DIR` — persistent private directory/storage for uploaded files; do not mount it as public static content.
+- `ADMIN_EMAIL` and a strong, unique `ADMIN_PASSWORD` — supply through the host's secret manager, not source code.
+- `REQUIRE_APPROVAL=1` — keep instructor publishing behind admin review.
+
+The app adds an HSTS response header in production and sets session cookies with `Secure`, `HttpOnly`, and `SameSite=Lax` (the Secure flag requires HTTPS). TLS certificates, HTTP-to-HTTPS redirects, firewall rules, persistent storage, PostgreSQL backups, and backup restoration must be configured and verified at the hosting provider.
+
+## Launch gates
+
+Follow [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md) for the end-to-end student journey, private material access, PostgreSQL staging verification, secrets, HTTPS, backup-and-restore testing, accessibility, and the consent-based pilot with a small number of real courses. Paid enrollment is intentionally rejected until a real payment integration is implemented; do not represent it as available.
