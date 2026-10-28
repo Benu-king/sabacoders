@@ -51,6 +51,20 @@ class SessionRow(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     expires_at: Mapped[dt.datetime] = mapped_column(DateTime)
 
+class TeacherApplication(Base):
+    __tablename__ = "teacher_applications"
+    __table_args__ = (CheckConstraint("status in ('pending','approved','rejected')", name="ck_teacher_application_status"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    name: Mapped[str] = mapped_column(String(120))
+    email: Mapped[str] = mapped_column(String(255), index=True)
+    password_hash: Mapped[str] = mapped_column(String(255))
+    expertise: Mapped[str] = mapped_column(String(160))
+    motivation: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(10), default="pending", index=True)
+    review_note: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime, default=now)
+    reviewed_at: Mapped[Optional[dt.datetime]] = mapped_column(DateTime)
+
 class Category(Base):
     __tablename__ = "categories"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -206,6 +220,14 @@ def throttle_fail(key): HITS.setdefault(key, []).append(time.time())
 EMAIL = re.compile(r"^[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}$")
 class Reg(BaseModel):
     email: str = Field(max_length=255); name: str = Field(min_length=1, max_length=120); password: str = Field(min_length=8, max_length=128)
+class TeacherApplicationIn(BaseModel):
+    name: str = Field(min_length=2, max_length=120)
+    email: str = Field(max_length=255)
+    password: str = Field(min_length=8, max_length=128)
+    expertise: str = Field(min_length=2, max_length=160)
+    motivation: str = Field(min_length=20, max_length=3000)
+class ApplicationDecision(BaseModel):
+    note: str = Field("", max_length=2000)
 class Login(BaseModel): email: str; password: str
 class AdminUser(Reg): role: Literal["student", "teacher", "admin"] = "student"
 class UserPatch(BaseModel): role: Optional[Literal["student", "teacher", "admin"]] = None; is_active: Optional[bool] = None
@@ -293,6 +315,22 @@ def register(b: Reg, response: Response, request: Request, db: Session = Depends
     if db.scalar(select(User.id).where(User.email == em)): raise HTTPException(409, "Email already registered")
     u = User(email=em, name=b.name.strip(), password_hash=hash_pw(b.password), role="student"); db.add(u); db.commit()  # role is NEVER taken from the client
     start_session(db, u, response); return udict(u)
+@app.post("/api/teacher-applications", status_code=201)
+def apply_to_teach(b: TeacherApplicationIn, request: Request, db: Session = Depends(get_db)):
+    em = b.email.strip().lower()
+    if not EMAIL.match(em): raise HTTPException(422, "Invalid email address")
+    key = f"teacher-application|{request.client.host if request.client else '?'}"
+    throttle_check(key, limit=5, window=3600)
+    if db.scalar(select(User.id).where(User.email == em)):
+        raise HTTPException(409, "An account already exists for this email. Log in or contact an administrator.")
+    if db.scalar(select(TeacherApplication.id).where(TeacherApplication.email == em, TeacherApplication.status == "pending")):
+        raise HTTPException(409, "An application for this email is already waiting for review.")
+    throttle_fail(key)
+    row = TeacherApplication(name=b.name.strip(), email=em, password_hash=hash_pw(b.password),
+                             expertise=b.expertise.strip(), motivation=b.motivation.strip())
+    db.add(row); db.commit()
+    return {"id": row.id, "status": row.status, "message": "Application received. An administrator must approve it before teacher access is granted."}
+
 @app.post("/api/auth/login")
 def login(b: Login, response: Response, request: Request, db: Session = Depends(get_db)):
     em = b.email.strip().lower(); key = f"{request.client.host if request.client else '?'}|{em}"; throttle_check(key)
@@ -536,6 +574,42 @@ def add_teacher(cid: str, b: TeacherAdd, db: Session = Depends(get_db), u=Depend
     if not t: raise HTTPException(404, "No teacher with that email")
     if t not in c.teachers: c.teachers.append(t); db.commit()
     return {"ok": True}
+
+# ---------- admin: teacher applications ----------
+def application_dict(x):
+    return {"id": x.id, "name": x.name, "email": x.email, "expertise": x.expertise,
+            "motivation": x.motivation, "status": x.status, "review_note": x.review_note,
+            "created_at": x.created_at.isoformat(), "reviewed_at": x.reviewed_at.isoformat() if x.reviewed_at else None}
+
+@app.get("/api/admin/teacher-applications")
+def teacher_applications(db: Session = Depends(get_db), u=Depends(admin)):
+    return [application_dict(x) for x in db.scalars(select(TeacherApplication).order_by(TeacherApplication.created_at.desc()))]
+
+@app.post("/api/admin/teacher-applications/{application_id}/approve")
+def approve_teacher_application(application_id: str, db: Session = Depends(get_db), u=Depends(admin)):
+    x = db.get(TeacherApplication, application_id)
+    if not x: raise HTTPException(404, "Application not found")
+    if x.status != "pending": raise HTTPException(409, f"Application is already {x.status}")
+    existing = db.scalar(select(User).where(User.email == x.email))
+    if existing:
+        if existing.role != "student": raise HTTPException(409, "This email already belongs to a staff account.")
+        existing.role = "teacher"
+        teacher = existing
+    else:
+        teacher = User(email=x.email, name=x.name, password_hash=x.password_hash, role="teacher")
+        db.add(teacher)
+    x.status, x.review_note, x.reviewed_at = "approved", "", now()
+    db.commit()
+    return {"status": x.status, "teacher": udict(teacher)}
+
+@app.post("/api/admin/teacher-applications/{application_id}/reject")
+def reject_teacher_application(application_id: str, b: ApplicationDecision, db: Session = Depends(get_db), u=Depends(admin)):
+    x = db.get(TeacherApplication, application_id)
+    if not x: raise HTTPException(404, "Application not found")
+    if x.status != "pending": raise HTTPException(409, f"Application is already {x.status}")
+    x.status, x.review_note, x.reviewed_at = "rejected", b.note.strip(), now()
+    db.commit()
+    return {"status": x.status}
 
 # ---------- admin: users & categories ----------
 @app.get("/api/admin/users")
