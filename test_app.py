@@ -246,3 +246,50 @@ def test_students_blocked_from_every_staff_and_admin_endpoint(world):
                             ("post", "/api/admin/users", {"json": {"email": "q@q.com", "name": "q", "password": "Passw0rd!!", "role": "admin"}})]:
         assert getattr(s, method)(url, **kw).status_code == 403, url
     me_id = s.get("/api/auth/me").json()["id"]; assert s.patch(f"/api/admin/users/{me_id}", json={"role": "admin"}).status_code == 403   # no self-promotion
+
+
+def test_teacher_application_requires_admin_approval_and_never_self_assigns(world, anon):
+    r = anon.post("/api/teacher-applications", json={
+        "name": "Applicant Example", "email": "applicant@saba.com", "password": "SecurePass123!",
+        "expertise": "Web development", "motivation": "I want to teach practical web development to beginners.", "role": "admin"
+    })
+    assert r.status_code == 201, r.text
+    aid = r.json()["id"]
+    assert r.json()["status"] == "pending"
+    assert anon.get("/api/auth/me").status_code == 401
+    assert anon.get("/api/manage/courses").status_code == 401
+    assert anon.post("/api/teacher-applications", json={
+        "name": "Applicant Example", "email": "applicant@saba.com", "password": "SecurePass123!",
+        "expertise": "Web development", "motivation": "I want to teach practical web development to beginners."
+    }).status_code == 409
+    assert world["t1"].get("/api/admin/teacher-applications").status_code == 403
+    item = next(x for x in world["adm"].get("/api/admin/teacher-applications").json() if x["id"] == aid)
+    assert item["email"] == "applicant@saba.com" and item["status"] == "pending"
+    assert "password" not in item and "password_hash" not in item
+    approved = world["adm"].post(f"/api/admin/teacher-applications/{aid}/approve")
+    assert approved.status_code == 200, approved.text
+    assert approved.json()["status"] == "approved"
+    teacher = login("applicant@saba.com", "SecurePass123!")
+    assert teacher.get("/api/auth/me").json()["role"] == "teacher"
+    assert teacher.get("/api/manage/courses").status_code == 200
+    assert world["adm"].post(f"/api/admin/teacher-applications/{aid}/approve").status_code == 409
+
+def test_teacher_application_rejection_and_validation(world, anon):
+    bad = anon.post("/api/teacher-applications", json={
+        "name": "Rejected Example", "email": "reject@saba.com", "password": "SecurePass123!",
+        "expertise": "Design", "motivation": "too short"
+    })
+    assert bad.status_code == 422
+    r = anon.post("/api/teacher-applications", json={
+        "name": "Rejected Example", "email": "reject@saba.com", "password": "SecurePass123!",
+        "expertise": "Design", "motivation": "I can teach practical design skills to new learners."
+    })
+    assert r.status_code == 201, r.text
+    aid = r.json()["id"]
+    assert world["adm"].post(f"/api/admin/teacher-applications/{aid}/reject", json={"note": "Please provide more teaching examples."}).json()["status"] == "rejected"
+    again = anon.post("/api/teacher-applications", json={
+        "name": "Rejected Example", "email": "reject@saba.com", "password": "SecurePass123!",
+        "expertise": "Design", "motivation": "I can teach practical design skills to new learners."
+    })
+    assert again.status_code == 201 and again.json()["status"] == "pending"
+    assert anon.get("/api/auth/me").status_code == 401
