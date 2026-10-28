@@ -262,6 +262,21 @@ select{min-height:44px;border-radius:12px;border:1px solid var(--line);backgroun
 @media(max-width:620px){.learning-dashboard:before{left:-30vw;width:70vw;height:70vw}.learning-dashboard:after{right:-24vw;width:60vw;height:60vw}.learning-stat:hover,.learning-card:hover{transform:translateY(-2px)}}
 @media(prefers-reduced-motion:reduce){.learning-dashboard:before,.learning-dashboard:after,.learning-welcome,.learning-welcome:after,.learning-avatar,.learning-status-dot,.learning-stat,.learning-card,.learning-fill:after{animation:none!important}.learning-stat,.learning-card,.learning-fill,.learning-actions .btn,.learning-browse-link{transition:none!important}}
 
+
+/* Compact course cards: reduce both width and horizontal footprint */
+.learning-dashboard .learning-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),340px));justify-content:start;gap:18px}
+.learning-dashboard .learning-card{max-width:340px;padding:0 16px 16px;border-radius:13px}
+.learning-dashboard .learning-card-art{min-height:88px;margin:0 -16px 15px;padding:13px 16px}
+.learning-dashboard .learning-card-art:after{width:130px;height:130px;right:8%;top:12px;box-shadow:0 0 0 14px rgba(120,226,237,.03),0 0 0 28px rgba(120,226,237,.02)}
+.learning-art-orb{width:48px;height:48px;right:17%;top:27px;border-radius:14px;font-size:16px}
+.learning-art-foot{font-size:8px;letter-spacing:.13em}
+.learning-dashboard .learning-card h2{font-size:1.12rem}
+.learning-dashboard .learning-card .sub{font-size:.85rem;line-height:1.5;margin-bottom:12px}
+.learning-dashboard .learning-meta{margin:13px 0 8px}
+.learning-dashboard .learning-actions{gap:8px;margin-top:14px}
+.learning-dashboard .learning-actions .btn{min-height:38px;padding:9px 13px;font-size:.82rem}
+@media(max-width:700px){.learning-dashboard .learning-grid{grid-template-columns:minmax(0,1fr);}.learning-dashboard .learning-card{max-width:none}.learning-dashboard .learning-card-art{min-height:82px;margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}.learning-art-orb{width:44px;height:44px;right:15%;top:25px}}
+
 /* Rich visual course tiles for My Learning */
 .learning-dashboard .learning-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:22px;margin-top:24px}
 .learning-dashboard .learning-card{position:relative;padding:0 20px 20px;overflow:hidden;border-color:#27394e;border-radius:15px;background:linear-gradient(155deg,rgba(17,29,47,.98),rgba(10,17,29,.98));box-shadow:0 16px 38px rgba(0,0,0,.18);transition:transform .22s,border-color .22s,box-shadow .22s}
