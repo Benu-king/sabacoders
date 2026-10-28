@@ -66,7 +66,7 @@ img.prev{max-width:100%;max-height:220px;border-radius:12px;border:1px solid var
 <script>
 (function(){
 "use strict";
-var T={en:{dash:"Dashboard",myCourses:"My courses",allCourses:"All courses",queue:"Review queue",cats:"Categories",users:"Users",logout:"Log out",login:"Log in",email:"Email",password:"Password",loginT:"Sign in to your dashboard",
+var T={en:{dash:"Dashboard",myCourses:"My courses",allCourses:"All courses",queue:"Review queue",cats:"Categories",users:"Users",applications:"Instructor applications",becomeTeacher:"Become an instructor",applyTitle:"Teach on Saba Coders",applyIntro:"Tell us what you can teach. Your application will be reviewed before teacher access is granted.",expertise:"Teaching expertise",motivation:"Why do you want to teach on Saba Coders?",apply:"Submit application",applicationSent:"Application submitted. Wait for an administrator to review it before signing in as a teacher.",noApplications:"No instructor applications",noApplicationsD:"New instructor applications will appear here.",approveApplication:"Approve application",rejectApplication:"Reject application",applicationApproved:"Application approved; teacher account is ready.",applicationRejected:"Application rejected",applicationReviewNote:"Optional note for the applicant",backToLogin:"Back to log in",confirmReject:"Reject this instructor application?",logout:"Log out",login:"Log in",email:"Email",password:"Password",loginT:"Sign in to your dashboard",
 denied:"This area is for teachers and administrators.",site:"Back to website",newCourse:"New course",createDraft:"Create draft",noCourses:"No courses yet",noCoursesD:"Create your first course to get started.",loading:"Loading…",retry:"Try again",
 draft:"Draft",pending_review:"Pending review",published:"Published",rejected:"Rejected",unpublished:"Unpublished",status:"Status",all:"All",
 sInfo:"1 · Course information",sMedia:"2 · Thumbnail and materials",sCur:"3 · Curriculum and lessons",sSubmit:"4 · Review and submit",saveFirst:"Save the course information first",
@@ -84,7 +84,7 @@ noQueue:"Nothing to review",noQueueD:"No courses are waiting for review.",submit
 slug:"Slug (letters, numbers, hyphens)",nameEn:"Name (English)",nameAm:"Name (Amharic)",pos:"Order",active:"Active",addCat:"Add category",role:"Role",name:"Name",addUser:"Create account",student:"Student",teacher:"Teacher",admin:"Administrator",
 you:"you",netErr:"Cannot reach the server. Check your connection.",err:"Something went wrong",expired:"Your session has ended. Please log in again.",badFile:"Choose a JPEG, PNG or WebP image under 3 MB.",
 open2:"Open course",downloads:"Download"},
-am:{dash:"ዳሽቦርድ",myCourses:"የእኔ ኮርሶች",allCourses:"ሁሉም ኮርሶች",queue:"የግምገማ ወረፋ",cats:"ምድቦች",users:"ተጠቃሚዎች",logout:"ውጣ",login:"ግባ",email:"ኢሜይል",password:"የይለፍ ቃል",loginT:"ወደ ዳሽቦርድዎ ይግቡ",
+am:{dash:"ዳሽቦርድ",myCourses:"የእኔ ኮርሶች",allCourses:"ሁሉም ኮርሶች",queue:"የግምገማ ወረፋ",cats:"ምድቦች",users:"ተጠቃሚዎች",applications:"የመምህር ማመልከቻዎች",becomeTeacher:"መምህር ለመሆን ያመልክቱ",applyTitle:"በሳባ ኮደርስ ያስተምሩ",applyIntro:"ማስተማር የሚችሉትን ይግለጹ። የመምህር ፈቃድ ከመሰጠቱ በፊት ማመልከቻዎ ይገመገማል።",expertise:"የማስተማር ሙያ/ዘርፍ",motivation:"በሳባ ኮደርስ ለምን ማስተማር ይፈልጋሉ?",apply:"ማመልከቻ ላክ",applicationSent:"ማመልከቻዎ ተልኳል። እባክዎ እስኪገመገም ይጠብቁ።",noApplications:"የመምህር ማመልከቻ የለም",noApplicationsD:"አዲስ ማመልከቻዎች እዚህ ይታያሉ።",approveApplication:"ማመልከቻውን አጽድቅ",rejectApplication:"ማመልከቻውን ውድቅ አድርግ",applicationApproved:"ማመልከቻው ጸድቋል፤ የመምህር መለያ ተዘጋጅቷል።",applicationRejected:"ማመልከቻው ውድቅ ተደርጓል",applicationReviewNote:"ለአመልካቹ አማራጭ ማስታወሻ",backToLogin:"ወደ መግቢያ ተመለስ",confirmReject:"ይህን የመምህር ማመልከቻ ውድቅ ያደርጋሉ?",logout:"ውጣ",login:"ግባ",email:"ኢሜይል",password:"የይለፍ ቃል",loginT:"ወደ ዳሽቦርድዎ ይግቡ",
 denied:"ይህ ክፍል ለመምህራንና ለአስተዳዳሪዎች ብቻ ነው።",site:"ወደ ድረ-ገጹ ተመለስ",newCourse:"አዲስ ኮርስ",createDraft:"ረቂቅ ፍጠር",noCourses:"እስካሁን ኮርስ የለም",noCoursesD:"ለመጀመር የመጀመሪያ ኮርስዎን ይፍጠሩ።",loading:"በመጫን ላይ…",retry:"እንደገና ሞክር",
 draft:"ረቂቅ",pending_review:"በግምገማ ላይ",published:"የታተመ",rejected:"ውድቅ የተደረገ",unpublished:"ያልታተመ",status:"ሁኔታ",all:"ሁሉም",
 sInfo:"1 · የኮርስ መረጃ",sMedia:"2 · ምስልና ማቴሪያሎች",sCur:"3 · ሥርዓተ ትምህርትና ትምህርቶች",sSubmit:"4 · ግምገማና ማቅረብ",saveFirst:"መጀመሪያ የኮርሱን መረጃ ያስቀምጡ",
@@ -133,11 +133,40 @@ function loginView(){
   F(t("email"),h("input",{class:"in",name:"email",type:"email",required:true,autocomplete:"username",maxlength:255})),
   F(t("password"),h("input",{class:"in",name:"password",type:"password",required:true,minlength:8,autocomplete:"current-password",maxlength:128})),err,
   h("button",{class:"btn",type:"submit"},t("login")));
- return h("div",{class:"page login"},h("div",{class:"card"},h("p",{class:"muted"},h("a",{href:"/"},"← "+t("site"))),h("h1",{},t("loginT")),f,h("div",{class:"row",style:"margin-top:14px"},langBtn())))}
+ return h("div",{class:"page login"},h("div",{class:"card"},h("p",{class:"muted"},h("a",{href:"/"},"← "+t("site"))),h("h1",{},t("loginT")),f,h("div",{class:"row",style:"margin-top:14px"},h("a",{href:"#apply"},t("becomeTeacher")),langBtn())))}
 
+async function viewApplication(){
+ var err=h("p",{role:"alert",style:"color:var(--bad);min-height:1.4em;margin:0"});
+ var f=h("form",{class:"stack",onsubmit:async function(e){
+   e.preventDefault();if(!f.reportValidity())return;err.textContent="";
+   try{await api("/api/teacher-applications",{method:"POST",json:{name:f.elements.name.value,email:f.elements.email.value,password:f.elements.password.value,expertise:f.elements.expertise.value,motivation:f.elements.motivation.value}});f.replaceWith(h("div",{class:"banner",role:"status"},t("applicationSent")))}
+   catch(x){err.textContent=x.message}
+  }},
+  h("div",{class:"g2"},F(t("name"),h("input",{class:"in",name:"name",required:true,minlength:2,maxlength:120,autocomplete:"name"})),
+   F(t("email"),h("input",{class:"in",name:"email",type:"email",required:true,maxlength:255,autocomplete:"email"})),
+   F(t("password"),h("input",{class:"in",name:"password",type:"password",required:true,minlength:8,maxlength:128,autocomplete:"new-password"})),
+   F(t("expertise"),h("input",{class:"in",name:"expertise",required:true,minlength:2,maxlength:160,placeholder:"e.g. Programming, design, finance"}))),
+  F(t("motivation"),h("textarea",{class:"in",name:"motivation",required:true,minlength:20,maxlength:3000,rows:5})),err,
+  h("button",{class:"btn",type:"submit"},t("apply")));
+ return h("div",{class:"page login"},h("div",{class:"card stack"},h("a",{href:"#courses"},"← "+t("backToLogin")),h("h1",{},t("applyTitle")),h("p",{class:"muted"},t("applyIntro")),f,h("div",{class:"row"},langBtn())))
+}
+async function viewApplications(){
+ var list=await api("/api/admin/teacher-applications");
+ var cards=list.map(function(a){
+  var actions=[],note=h("textarea",{class:"in",rows:2,maxlength:2000,placeholder:t("applicationReviewNote")});
+  if(a.status==="pending"){
+   actions.push(h("button",{class:"btn",type:"button",onclick:async function(){if(await act(function(){return api("/api/admin/teacher-applications/"+a.id+"/approve",{method:"POST"})},t("applicationApproved")))render()}},t("approveApplication")));
+   actions.push(h("button",{class:"btn ghost",type:"button",onclick:async function(){if(!confirm(t("confirmReject")))return;if(await act(function(){return api("/api/admin/teacher-applications/"+a.id+"/reject",{method:"POST",json:{note:note.value}})},t("applicationRejected")))render()}},t("rejectApplication")));
+  }
+  return h("article",{class:"card stack"},h("div",{class:"row",style:"justify-content:space-between;align-items:center"},h("h3",{},a.name),badge(a.status)),
+   h("p",{class:"muted"},a.email+" · "+a.expertise+" · "+new Date(a.created_at).toLocaleDateString()),
+   h("p",{},a.motivation),a.review_note?h("p",{class:"muted"},a.review_note):null,a.status==="pending"?note:null,h("div",{class:"row",style:"flex-wrap:wrap"},actions));
+ });
+ return h("div",{},h("h1",{},t("applications")),cards.length?h("div",{class:"grid"},cards):empty(t("noApplications"),t("noApplicationsD")))
+}
 function shell(view,main){
  var nav=[["courses",me.role==="admin"?t("allCourses"):t("myCourses")]];
- if(me.role==="admin")nav.push(["queue",t("queue")],["cats",t("cats")],["users",t("users")]);
+ if(me.role==="admin")nav.push(["queue",t("queue")],["applications",t("applications")],["cats",t("cats")],["users",t("users")]);
  return h("div",{},h("header",{class:"top"},h("a",{class:"brand",href:"#courses"},"Saba Coders · "+t("dash")),
   h("nav",{"aria-label":"Dashboard"},nav.map(function(n){return h("a",{href:"#"+n[0],"aria-current":view===n[0]?"page":null,onclick:function(e){if(location.hash==="#"+n[0]){e.preventDefault();render()}}},n[1])})),
   h("div",{class:"sp"},h("span",{class:"muted"},me.name+" ("+t(me.role)+")"),h("a",{class:"btn ghost sm",href:"/"},t("site")),langBtn(),logoutBtn())),
@@ -147,11 +176,11 @@ var rid=0;
 async function render(){
  var my=++rid,app=$("#app");document.documentElement.lang=lang;
  if(me===undefined){try{me=await api("/api/auth/me",{quiet:true})}catch(e){me=null}if(my!==rid)return}
- if(!me){app.replaceChildren(loginView());return}
+ if(!me){app.replaceChildren(location.hash==="#apply"?await viewApplication():loginView());return}
  if(me.role==="student"){app.replaceChildren(h("div",{class:"page login"},h("div",{class:"card"},h("h1",{},t("denied")),h("div",{class:"row"},h("a",{class:"btn",href:"/"},t("site")),logoutBtn()))));return}
  var m=(location.hash.slice(1)||"courses").split(/-(.+)/),view=m[0],arg=m[1];
- if(me.role!=="admin"&&["queue","cats","users","review"].indexOf(view)>=0){go("courses");return}
- var fn={courses:viewCourses,new:function(){return viewEdit(null)},edit:function(){return viewEdit(arg)},queue:viewQueue,review:function(){return viewReview(arg)},cats:viewCats,users:viewUsers}[view]||viewCourses;
+ if(me.role!=="admin"&&["queue","applications","cats","users","review"].indexOf(view)>=0){go("courses");return}
+ var fn={courses:viewCourses,new:function(){return viewEdit(null)},edit:function(){return viewEdit(arg)},queue:viewQueue,applications:viewApplications,review:function(){return viewReview(arg)},cats:viewCats,users:viewUsers}[view]||viewCourses;
  app.replaceChildren(shell(view,loadingEl()));
  try{var v=await fn();if(my!==rid)return;app.replaceChildren(shell(view,v))}catch(e){if(my!==rid)return;app.replaceChildren(shell(view,errEl(e,render)))}}
 
