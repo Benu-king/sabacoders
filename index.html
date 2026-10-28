@@ -135,9 +135,44 @@ footer{border-top:1px solid var(--line);padding:56px 0 max(28px,env(safe-area-in
 .fbar nav a:hover{color:#fff}
 .top{border:1px solid var(--line);border-radius:999px;background:transparent;min-height:44px;padding:0 18px;cursor:pointer}
 .top:hover{border-color:var(--gold)}
-dialog{border:1px solid var(--gold);border-radius:20px;background:var(--bg2);color:var(--ink);max-width:min(440px,92vw);padding:28px}
-dialog::backdrop{background:rgba(0,0,0,.65)}
-dialog h3{font-size:1.5rem;margin-bottom:8px}
+/* Keep native hidden state authoritative, even for elements styled as flex/grid. */
+[hidden]{display:none!important}
+dialog{border:1px solid rgba(201,166,107,.42);border-radius:26px;background:#0a1128;color:var(--ink);width:min(850px,94vw);max-width:850px;max-height:min(92vh,760px);padding:0;overflow:auto;box-shadow:0 32px 100px rgba(0,0,0,.65)}
+dialog[open]{display:grid;grid-template-columns:.92fr 1.08fr}
+dialog::backdrop{background:rgba(2,5,18,.78);backdrop-filter:blur(8px)}
+.auth-visual{position:relative;isolation:isolate;overflow:hidden;min-height:520px;padding:38px 32px;background:radial-gradient(80% 60% at 50% 20%,rgba(36,79,184,.75),transparent 70%),linear-gradient(155deg,#111d48,#080d20 78%)}
+.auth-visual::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.28;background-image:linear-gradient(rgba(127,231,255,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(127,231,255,.16) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(to bottom,#000,transparent 85%)}
+.auth-mark{display:inline-flex;align-items:center;gap:8px;font:700 1.15rem var(--sans);letter-spacing:.06em;color:#fff}
+.auth-mark span{color:var(--gold2);font-size:1.3rem}
+.auth-kicker{margin:34px 0 10px;color:var(--gold2);font-size:.68rem;font-weight:700;letter-spacing:.2em}
+.auth-visual h2{max-width:9ch;font-size:clamp(2rem,4vw,3rem);line-height:1.08;color:#fff}
+.auth-visual-copy{max-width:30ch;color:#bac6e5;font-size:.92rem;margin:18px 0 0}
+.auth-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.auth-pills span{padding:6px 12px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.05);font-size:.75rem;color:#e6ebfa}
+.auth-orbit{position:absolute;width:190px;height:190px;right:-38px;bottom:-44px;border:1px solid rgba(127,231,255,.35);border-radius:50%;display:grid;place-items:center;box-shadow:0 0 70px rgba(46,102,255,.18)}
+.auth-orbit::before,.auth-orbit::after{content:"";position:absolute;inset:18px;border:1px solid rgba(201,166,107,.35);border-radius:50%;transform:rotate(35deg) scaleX(.58)}
+.auth-orbit::after{transform:rotate(-35deg) scaleX(.58)}
+.auth-orbit i{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 18px var(--cyan)}
+.auth-orbit i:nth-child(1){top:20px;left:50px}.auth-orbit i:nth-child(2){right:18px;top:90px;background:var(--gold2)}.auth-orbit i:nth-child(3){bottom:24px;left:68px}
+.auth-orbit b{font:600 2rem var(--serif);color:var(--gold2)}
+.auth-panel{padding:42px clamp(24px,4vw,48px) 30px;align-self:center}
+.auth-head .auth-kicker{margin:0 0 10px}
+dialog h3{font-size:clamp(1.8rem,3vw,2.35rem);line-height:1.1;margin:0}
+.auth-note{margin:10px 0 22px;color:var(--muted);font-size:.9rem}
+.tabs2{display:flex;gap:6px;margin:0 0 20px;padding:5px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.035)}
+.tabs2 button{flex:1;min-height:42px;border-radius:999px;border:1px solid transparent;background:transparent;cursor:pointer;color:var(--muted);font-size:.88rem;transition:background .2s,color .2s}
+.tabs2 button[aria-pressed="true"]{background:linear-gradient(120deg,var(--gold2),var(--gold));color:#0A1230;border-color:transparent;font-weight:700}
+.authf{display:grid;gap:14px}
+.authf label{display:grid;gap:7px;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#b5c0df}
+.authf input{width:100%;min-height:50px;border-radius:13px;border:1px solid rgba(255,255,255,.14);background:#070c1d;color:var(--ink);padding:0 14px;font:400 .94rem var(--sans);text-transform:none;letter-spacing:0;transition:border-color .2s,box-shadow .2s}
+.authf input::placeholder{color:#667394}
+.authf input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(127,231,255,.1)}
+#authErr{color:#ff9a9a;min-height:1.2em;margin:0;font-size:.86rem}
+.auth-submit{width:100%;min-height:50px;justify-content:space-between;padding:0 18px;margin-top:2px}
+.auth-submit span{font-size:1.2rem}
+.auth-close{width:100%;margin-top:10px;min-height:42px;border-style:solid;opacity:.8}
+@media(max-width:650px){dialog[open]{grid-template-columns:1fr;width:min(480px,94vw);max-height:92vh}.auth-visual{min-height:0;padding:22px 24px 26px}.auth-mark{font-size:1rem}.auth-visual .auth-kicker{margin-top:18px}.auth-visual h2{max-width:15ch;font-size:1.8rem}.auth-visual-copy{font-size:.84rem;margin-top:10px}.auth-pills{margin-top:14px}.auth-orbit{width:120px;height:120px;right:-28px;bottom:-40px;opacity:.65}.auth-panel{padding:26px 24px 24px}.auth-note{margin-bottom:18px}}
+@media(prefers-reduced-motion:reduce){.authf input,.tabs2 button{transition:none}}
 .cg{position:fixed;left:0;top:0;width:360px;height:360px;margin:-180px 0 0 -180px;border-radius:50%;background:radial-gradient(circle,rgba(127,231,255,.1),transparent 65%);pointer-events:none;z-index:1;opacity:0;transition:opacity .3s}
 html.js .rv{opacity:0;transform:translateY(28px);transition:opacity .8s,transform .8s}
 html.js .rv.in{opacity:1;transform:none}
@@ -281,15 +316,26 @@ select{min-height:44px;border-radius:12px;border:1px solid var(--line);backgroun
 <button class="top" type="button" id="up" data-i18n="top">Back to top</button>
 </div></div></footer>
 
-<dialog id="dlg" aria-labelledby="dt"><h3 id="dt">Log in</h3>
-<div class="tabs2"><button type="button" id="tabL" data-i18n="auth_login">Log in</button><button type="button" id="tabR" data-i18n="auth_reg">Create account</button></div>
-<p id="authDemo" hidden data-i18n="dlg_p">Registration and sign-in need the Saba Coders server.</p>
-<form id="authForm" class="authf">
-<label id="nameRow" hidden><span data-i18n="f_name">Full name</span><input id="fName" autocomplete="name" maxlength="120"></label>
-<label><span data-i18n="f_email">Email</span><input id="fEmail" type="email" required autocomplete="username" maxlength="255"></label>
-<label><span data-i18n="f_pw">Password (8+ characters)</span><input id="fPw" type="password" required minlength="8" maxlength="128"></label>
-<p id="authErr" role="alert"></p><button class="btn" type="submit" id="authGo">Log in</button></form>
-<button class="btn ghost" type="button" id="authClose" data-i18n="close" style="margin-top:12px">Close</button></dialog>
+<dialog id="dlg" aria-labelledby="dt">
+<div class="auth-visual">
+  <div class="auth-mark" aria-hidden="true">SC<span>✦</span></div>
+  <p class="auth-kicker">A WORLD OF SKILLS</p>
+  <h2>Build skills for the world ahead.</h2>
+  <p class="auth-visual-copy">One learning space for technology, business, finance, engineering and creative work.</p>
+  <div class="auth-pills"><span>Learn</span><span>Build</span><span>Grow</span></div>
+  <div class="auth-orbit" aria-hidden="true"><i></i><i></i><i></i><b>SC</b></div>
+</div>
+<div class="auth-panel">
+  <div class="auth-head"><p class="auth-kicker">YOUR NEXT CHAPTER</p><h3 id="dt">Log in</h3><p class="auth-note">Pick up where you left off, or create an account to start learning.</p></div>
+  <div class="tabs2"><button type="button" id="tabL" data-i18n="auth_login">Log in</button><button type="button" id="tabR" data-i18n="auth_reg">Create account</button></div>
+  <p id="authDemo" hidden data-i18n="dlg_p">Registration and sign-in need the Saba Coders server.</p>
+  <form id="authForm" class="authf">
+  <label id="nameRow" hidden><span data-i18n="f_name">Full name</span><input id="fName" autocomplete="name" maxlength="120"></label>
+  <label><span data-i18n="f_email">Email</span><input id="fEmail" type="email" required autocomplete="username" maxlength="255" placeholder="you@example.com"></label>
+  <label><span data-i18n="f_pw">Password (8+ characters)</span><input id="fPw" type="password" required minlength="8" maxlength="128" placeholder="At least 8 characters"></label>
+  <p id="authErr" role="alert"></p><button class="btn auth-submit" type="submit" id="authGo">Log in <span aria-hidden="true">→</span></button></form>
+  <button class="btn ghost auth-close" type="button" id="authClose" data-i18n="close">Close</button>
+</div></dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
