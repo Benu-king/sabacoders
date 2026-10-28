@@ -385,10 +385,11 @@ def course_detail(ref: str, db: Session = Depends(get_db), u=Depends(user_opt)):
 @app.get("/api/courses/{ref}/curriculum")
 def curriculum(ref: str, db: Session = Depends(get_db), u=Depends(user_opt)):
     c = visible(db, ref, u); acc = has_access(db, u, c); out = []
+    completed_ids = set(db.scalars(select(Progress.lesson_id).where(Progress.user_id == u.id, Progress.course_id == c.id))) if acc and u else set()
     for s in c.sections:
         ls = []
         for l in s.lessons:
-            d = {"id": l.id, "title_en": l.title_en, "title_am": l.title_am, "kind": l.kind, "duration_minutes": l.duration_minutes, "is_preview": l.is_preview, "locked": not (acc or l.is_preview)}
+            d = {"id": l.id, "title_en": l.title_en, "title_am": l.title_am, "kind": l.kind, "duration_minutes": l.duration_minutes, "is_preview": l.is_preview, "locked": not (acc or l.is_preview), "completed": l.id in completed_ids}
             if not d["locked"]: d.update(content_text=l.content_text, video_url=l.video_url)
             ls.append(d)
         out.append({"id": s.id, "title_en": s.title_en, "title_am": s.title_am, "lessons": ls})
