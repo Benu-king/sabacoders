@@ -459,7 +459,7 @@ function buildSelects(){var L=T[lang];
  opts("#f-sort",[["az",L.s_az],["dshort",L.s_dshort],["dlong",L.s_dlong],["plow",L.s_plow],["phigh",L.s_phigh],["level",L.s_level]],F.sort)}
 function render(){
  var cg=$("#courses");cg.innerHTML="";
- if(!COURSES.length){var e=el("div","empty");e.style.gridColumn="1/-1";e.appendChild(el("strong","",T[lang].feat_t));e.appendChild(el("span","",T[lang].feat_d));cg.appendChild(e);[0,1,2,3].forEach(function(i){cg.appendChild(card(i,true))})}
+ if(!COURSES.length){var e=el("div","empty");e.style.gridColumn="1/-1";e.appendChild(el("strong","",T[lang].feat_t));e.appendChild(el("span","",T[lang].feat_d));cg.appendChild(e)}
  else COURSES.slice(0,8).forEach(function(c){cg.appendChild(card(conv(c),false))});
  renderExplore()}
 function apply(){
