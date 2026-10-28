@@ -476,7 +476,7 @@ function apply(){
  $("#lang").textContent=lang==="en"?"አማ":"EN";buildSelects();render();fillInfo();showMode()}
 function fillInfo(){var h=(location.hash||"").slice(1);if(INFO.indexOf(h)<0)return;var L=T[lang],a=h==="about";
  $("#ih").textContent=L["nav_"+h];$("#ip").textContent=a?L.about_p:L["pg_"+h+"_p"];$("#ie").hidden=a;if(!a){$("#iet").textContent=L["pg_"+h+"_t"];$("#ied").textContent=L["pg_"+h+"_d"]}}
-$("#lang").onclick=function(){lang=lang==="en"?"am":"en";try{localStorage.setItem("saba_lang",lang)}catch(e){}apply()};
+$("#lang").onclick=function(){lang=lang==="en"?"am":"en";try{localStorage.setItem("saba_lang",lang)}catch(e){}apply();var h=(location.hash||"").slice(1);if(h.indexOf("course/")===0){try{loadCourse(decodeURIComponent(h.slice(7)))}catch(e){courseFail("Invalid course link.")}}};
 $("#q").addEventListener("input",function(){Q=this.value;refresh()});
 $("#q2").addEventListener("input",function(){Q=this.value;$("#q").value=Q;refresh()});
 $("#sf2").addEventListener("submit",function(e){e.preventDefault()});
