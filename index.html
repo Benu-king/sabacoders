@@ -172,7 +172,7 @@ dialog h3{font-size:clamp(1.8rem,3vw,2.35rem);line-height:1.1;margin:0}
 #authErr{color:#ff9a9a;min-height:1.2em;margin:0;font-size:.86rem}
 .auth-submit{width:100%;min-height:50px;justify-content:space-between;padding:0 18px;margin-top:2px}
 .auth-submit span{font-size:1.2rem}
-.auth-close{width:100%;margin-top:10px;min-height:42px;border-style:solid;opacity:.8}
+.auth-x{position:absolute;top:14px;right:14px;z-index:5;width:40px;height:40px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.16);border-radius:50%;background:rgba(7,12,29,.78);color:#cbd4eb;font:400 1.65rem/1 var(--sans);cursor:pointer;transition:background .2s,border-color .2s,color .2s,transform .2s}.auth-x:hover{background:rgba(201,166,107,.16);border-color:var(--gold);color:#fff;transform:rotate(90deg)}.auth-x:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
 @media(max-width:650px){dialog[open]{grid-template-columns:1fr;width:min(480px,94vw);max-height:92vh}.auth-visual{min-height:0;padding:22px 24px 26px}.auth-mark{font-size:1rem}.auth-visual .auth-kicker{margin-top:18px}.auth-visual h2{max-width:15ch;font-size:1.8rem}.auth-visual-copy{font-size:.84rem;margin-top:10px}.auth-pills{margin-top:14px}.auth-orbit{width:120px;height:120px;right:-28px;bottom:-40px;opacity:.65}.auth-panel{padding:26px 24px 24px}.auth-note{margin-bottom:18px}}
 @media(prefers-reduced-motion:reduce){.authf input,.tabs2 button{transition:none}}
 .cg{position:fixed;left:0;top:0;width:360px;height:360px;margin:-180px 0 0 -180px;border-radius:50%;background:radial-gradient(circle,rgba(127,231,255,.1),transparent 65%);pointer-events:none;z-index:1;opacity:0;transition:opacity .3s}
@@ -320,6 +320,7 @@ select{min-height:44px;border-radius:12px;border:1px solid var(--line);backgroun
 </div></div></footer>
 
 <dialog id="dlg" aria-labelledby="dt">
+<button class="auth-x" type="button" id="authClose" aria-label="Close sign-in dialog" title="Close">×</button>
 <div class="auth-visual">
   <div class="auth-mark" aria-hidden="true">SC<span>✦</span></div>
   <p class="auth-kicker">A WORLD OF SKILLS</p>
@@ -338,7 +339,6 @@ select{min-height:44px;border-radius:12px;border:1px solid var(--line);backgroun
   <label><span data-i18n="f_pw">Password (8+ characters)</span><input id="fPw" type="password" required minlength="8" maxlength="128" placeholder="At least 8 characters"></label>
   <p id="authErr" role="alert"></p><button class="btn auth-submit" type="submit" id="authGo">Log in <span aria-hidden="true">→</span></button></form>
   <p class="auth-note" style="text-align:center;margin-top:14px">Want to teach on Saba Coders? <a href="/dashboard.html#apply" style="color:var(--gold);font-weight:700">Apply as an instructor</a></p>
-  <button class="btn ghost auth-close" type="button" id="authClose" data-i18n="close">Close</button>
 </div></dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
