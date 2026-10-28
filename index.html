@@ -306,6 +306,7 @@ select{min-height:44px;border-radius:12px;border:1px solid var(--line);backgroun
 <p class="kick">Saba Coders</p><h2 class="ph" id="ih"></h2><p class="sub" id="ip"></p>
 <div class="empty" id="ie"><strong id="iet"></strong><span id="ied"></span></div>
 </div></section></div>
+<div id="v-course" hidden><section class="xp"><div class="w" style="max-width:920px"><a class="btn ghost" href="#explore">← Explore courses</a><p class="kick" style="margin-top:28px">COURSE DETAILS</p><h1 class="ph" id="courseTitle">Loading course…</h1><p class="sub" id="courseSummary"></p><div class="empty" id="courseMeta" hidden></div><div id="courseDescription" class="sub" style="white-space:pre-wrap;margin:24px 0"></div><h2 class="ph" style="font-size:1.5rem;margin-top:32px">Course curriculum</h2><div id="courseCurriculum" class="empty"><span>Loading lessons…</span></div><p id="courseError" role="alert" style="color:#ff9b9b" hidden></p></div></section></div>
 </main>
 
 <footer><div class="w">
@@ -411,7 +412,7 @@ var CAT=[],CATS=[],API=false,PG={page:1,pages:1,total:0,size:12},status="loading
 var LV=["Beginner","Intermediate","Advanced"],LVO={Beginner:0,Intermediate:1,Advanced:2};
 function ttl(c){return c.title[lang]||c.title.en}
 var SORT={az:function(a,b){return ttl(a).localeCompare(ttl(b),lang)},dshort:function(a,b){return a.hours-b.hours},dlong:function(a,b){return b.hours-a.hours},plow:function(a,b){return a.price-b.price},phigh:function(a,b){return b.price-a.price},level:function(a,b){return LVO[a.level]-LVO[b.level]||a.hours-b.hours}};
-function conv(c){var L=T[lang];return{title:ttl(c),discipline:c.d,level:L["lv_"+c.level],duration:c.hours+(lang==="am"?" ":"")+L.hr,lessons:c.lessons,instructor:c.instructor?(c.instructor[lang]||c.instructor.en):"",type:L["ty_"+c.type],price:c.price===0?0:c.price.toLocaleString("en-US")+" "+L.cur,image:c.image,demo:c.demo}}
+function conv(c){var L=T[lang];return{id:c.id,url:c.id?"#course/"+encodeURIComponent(c.slug||c.id):null,title:ttl(c),discipline:c.d,level:L["lv_"+c.level],duration:c.hours+(lang==="am"?" ":"")+L.hr,lessons:c.lessons,instructor:c.instructor?(c.instructor[lang]||c.instructor.en):"",type:L["ty_"+c.type],price:c.price===0?0:c.price.toLocaleString("en-US")+" "+L.cur,image:c.image,demo:c.demo}}
 function total(){return API?CATS.reduce(function(a,c){return a+c.course_count},0):CAT.length}
 function xlist(){if(API)return CAT;var q=Q.trim().toLowerCase();
  return CAT.filter(function(c){var hay=(c.title.en+" "+c.title.am+" "+D[c.d][0]+" "+D[c.d][1]).toLowerCase();
@@ -496,9 +497,10 @@ function showAll(){rv.forEach(function(e){e.classList.add("in")})}
 function check(){var h=window.innerHeight||600;rv.forEach(function(e){if(!e.classList.contains("in")&&e.getBoundingClientRect().top<h*.95)e.classList.add("in")})}
 check();window.addEventListener("scroll",check,{passive:true});window.addEventListener("resize",check);
 setTimeout(showAll,1500);
+var courseRequest=0;function loadCourse(ref){var request=++courseRequest;$("#courseTitle").textContent="Loading course…";$("#courseSummary").textContent="";$("#courseDescription").textContent="";$("#courseMeta").hidden=true;$("#courseCurriculum").textContent="Loading lessons…";$("#courseError").hidden=true;fetch("/api/courses/"+encodeURIComponent(ref),{credentials:"same-origin"}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.detail||"Could not open this course.");return d})}).then(function(c){if(request!==courseRequest)return;$("#courseTitle").textContent=lang==="am"?(c.title_am||c.title_en):c.title_en;$("#courseSummary").textContent=lang==="am"?(c.summary_am||c.summary_en||""):(c.summary_en||"");$("#courseDescription").textContent=lang==="am"?(c.description_am||c.description_en||""):(c.description_en||"");$("#courseMeta").hidden=false;$("#courseMeta").textContent=[c.category&& (lang==="am"?(c.category.name_am||c.category.name_en):c.category.name_en),c.level,c.lesson_count+" lessons",c.price===0?"Free":c.price+" ETB"].filter(Boolean).join(" · ");return fetch("/api/courses/"+encodeURIComponent(ref)+"/curriculum",{credentials:"same-origin"}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.detail||"Could not load curriculum.");return d})})}).then(function(data){if(!data||request!==courseRequest)return;var box=$("#courseCurriculum");box.innerHTML="";if(!data.sections||!data.sections.length){box.textContent="No lessons have been added to this course yet.";return}data.sections.forEach(function(section){var wrap=el("div","");wrap.style.cssText="text-align:left;padding:18px 0;border-bottom:1px solid rgba(255,255,255,.12)";var h=el("h3","",lang==="am"?(section.title_am||section.title_en):section.title_en);wrap.appendChild(h);(section.lessons||[]).forEach(function(lesson){var row=el("p","", "▹ "+(lang==="am"?(lesson.title_am||lesson.title_en):lesson.title_en)+(lesson.locked?" · 🔒":""));row.style.margin="10px 0";wrap.appendChild(row)});box.appendChild(wrap)})}).catch(function(e){if(request!==courseRequest)return;$("#courseCurriculum").textContent="";$("#courseError").textContent=e.message||"Could not open this course.";$("#courseError").hidden=false})}
 function route(){
- var h=(location.hash||"").slice(1),ex=h==="explore",inf=INFO.indexOf(h)>=0,pg=ex?"explore":inf?h:"home";
- $("#v-home").hidden=ex||inf;$("#v-explore").hidden=!ex;$("#v-info").hidden=!inf;
+ var h=(location.hash||"").slice(1),ex=h==="explore",inf=INFO.indexOf(h)>=0,isCourse=h.indexOf("course/")===0,ref=isCourse?decodeURIComponent(h.slice(7)):"",pg=ex?"explore":inf?h:isCourse?"course":"home";
+ $("#v-home").hidden=ex||inf||isCourse;$("#v-explore").hidden=!ex;$("#v-info").hidden=!inf;$("#v-course").hidden=!isCourse;if(isCourse)loadCourse(ref);
  $$("a[data-r]").forEach(function(a){if(a.dataset.r===pg)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
  if(ex){$("#q2").value=Q;window.scrollTo(0,0)}
  else if(inf){fillInfo();window.scrollTo(0,0)}
