@@ -101,6 +101,18 @@ html[lang="am"] h1{line-height:1.3}
 .emb img{display:block;width:100%;height:100%;object-fit:contain;-webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent 100%);mask-image:radial-gradient(closest-side,#000 70%,transparent 100%);filter:drop-shadow(0 0 36px rgba(60,120,255,.35))}
 @keyframes fl{50%{transform:translateY(-10px)}}
 .emb.tilt{animation:none}
+
+/* hero emblem: stronger layered 3D presentation */
+.hstage{perspective:1400px;isolation:isolate}
+.emb{position:relative;transform-style:preserve-3d;perspective:1400px}
+.emb::before{content:"";position:absolute;z-index:0;left:8%;right:8%;top:16%;bottom:12%;border:2px solid rgba(74,166,255,.72);border-radius:50%;transform:translateZ(-34px) rotateX(68deg) rotateZ(-18deg);box-shadow:0 0 18px rgba(35,130,255,.5),inset 0 0 18px rgba(35,130,255,.22);animation:emblemOrbit 12s linear infinite}
+.emb::after{content:"";position:absolute;z-index:0;left:24%;right:24%;bottom:4%;height:12%;border-radius:50%;background:radial-gradient(ellipse,rgba(78,190,255,.55),rgba(25,82,220,.2) 42%,transparent 72%);filter:blur(10px);transform:translateZ(-48px) rotateX(68deg)}
+.emb img{position:relative;z-index:1;transform:translateZ(34px) rotateY(-7deg) rotateX(3deg);transform-origin:50% 55%;filter:drop-shadow(0 28px 22px rgba(0,0,0,.55)) drop-shadow(0 0 28px rgba(38,126,255,.42)) drop-shadow(0 0 12px rgba(245,183,59,.22));transition:transform .55s cubic-bezier(.2,.8,.2,1),filter .55s ease}
+.emb:hover img{transform:translateZ(58px) rotateY(-2deg) rotateX(1deg) scale(1.025);filter:drop-shadow(0 34px 26px rgba(0,0,0,.58)) drop-shadow(0 0 36px rgba(38,126,255,.55)) drop-shadow(0 0 16px rgba(245,183,59,.3))}
+@keyframes emblemOrbit{to{transform:translateZ(-34px) rotateX(68deg) rotateZ(342deg)}}
+@media(max-width:900px){.emb img{transform:translateZ(20px) rotateY(-4deg) rotateX(2deg)}.emb::before{left:4%;right:4%}}
+@media(prefers-reduced-motion:reduce){.emb::before{animation:none}.emb img{transition:none}}
+
 .eyebrow{color:#2fe6d6;font-weight:700}.eyebrow::before{background:#2fe6d6}
 h1{font-weight:800;font-size:clamp(2.4rem,min(5.4vw,8.4vh),5rem);letter-spacing:-.025em}
 h1 em{color:#F5B73B;font-weight:800}
