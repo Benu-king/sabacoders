@@ -379,7 +379,17 @@ def list_courses(q: str = "", category: str = "", level: str = "", price: str = 
     if language: st = st.where(or_(Course.language == language, Course.language == "both"))
     total = db.scalar(select(func.count()).select_from(st.subquery()))
     rows = db.scalars(st.order_by(*SORTS.get(sort, SORTS["newest"])(), Course.id).limit(page_size).offset((page - 1) * page_size)).all()
-    return {"items": [cdict(c) for c in rows], "total": total, "page": page, "page_size": page_size, "pages": max(1, math.ceil(total / page_size))}
+    items = [cdict(c) for c in rows]
+    if rows:
+        enrollment_rows = db.execute(
+            select(Enrollment.course_id, func.count(Enrollment.id))
+            .where(Enrollment.course_id.in_([c.id for c in rows]))
+            .group_by(Enrollment.course_id)
+        ).all()
+        enrollment_counts = {course_id: count for course_id, count in enrollment_rows}
+        for item in items:
+            item["student_count"] = enrollment_counts.get(item["id"], 0)
+    return {"items": items, "total": total, "page": page, "page_size": page_size, "pages": max(1, math.ceil(total / page_size))}
 @app.get("/api/courses/{ref}")
 def course_detail(ref: str, db: Session = Depends(get_db), u=Depends(user_opt)): return cdict(visible(db, ref, u), True)
 @app.get("/api/courses/{ref}/curriculum")
