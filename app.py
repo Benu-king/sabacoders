@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from sqlalchemy import (create_engine, event, String, Integer, Text, Boolean, DateTime, ForeignKey, UniqueConstraint,
                         CheckConstraint, Table, Column, select, func, or_, case)
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker, Session
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker, Session, selectinload
 
 BASE = pathlib.Path(__file__).parent
 APP_ENV = os.getenv("APP_ENV", "development").strip().lower()
@@ -378,7 +378,7 @@ def list_courses(q: str = "", category: str = "", level: str = "", price: str = 
     if type: st = st.where(Course.course_type == type)
     if language: st = st.where(or_(Course.language == language, Course.language == "both"))
     total = db.scalar(select(func.count()).select_from(st.subquery()))
-    rows = db.scalars(st.order_by(*SORTS.get(sort, SORTS["newest"])(), Course.id).limit(page_size).offset((page - 1) * page_size)).all()
+    rows = db.scalars(st.options(selectinload(Course.category), selectinload(Course.teachers)).order_by(*SORTS.get(sort, SORTS["newest"])(), Course.id).limit(page_size).offset((page - 1) * page_size)).all()
     items = [cdict(c) for c in rows]
     if rows:
         enrollment_rows = db.execute(
