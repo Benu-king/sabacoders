@@ -30,6 +30,6 @@ jobs:
         with:
           node-version: '20'
       - name: Install jsdom for UI integration tests
-        run: npm install --no-save jsdom
+        run: npm install --no-save jsdom@26.1.0
       - name: Run browser-simulation integration tests against a disposable database
         run: node test_ui.js
