@@ -143,7 +143,8 @@ h2{font-size:clamp(2rem,5.4vw,3.8rem);line-height:1.12;letter-spacing:-.015em}
 .empty{border:1px dashed rgba(255,255,255,.25);border-radius:20px;padding:clamp(24px,4vw,44px);color:var(--muted)}
 .empty strong{display:block;color:var(--ink);font-family:var(--serif);font-weight:500;font-size:1.4rem;margin-bottom:6px}
 /* catalog header */
-.cstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;margin:0 0 clamp(36px,6vw,64px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.catalog-stats{padding:10px 0 0;border-top:1px solid var(--line)}
+.cstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;max-width:1168px;margin:0 auto clamp(36px,6vw,64px);border-bottom:1px solid var(--line)}
 .cstats>div{padding:22px 0;text-align:center}
 .cstats dt{font:600 clamp(1.8rem,4vw,2.6rem) var(--serif)}
 .cstats dd{margin:4px 0 0;color:var(--muted);font-size:.85rem}
@@ -198,6 +199,7 @@ h2{font-size:clamp(2rem,5.4vw,3.8rem);line-height:1.12;letter-spacing:-.015em}
 #featured .reference-grid .go{font-size:.82rem;white-space:nowrap}
 @media(max-width:980px){#featured .reference-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){#featured .reference-grid{grid-template-columns:1fr}#featured .chead{margin-bottom:30px}}
+@media(max-width:700px){.cstats{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:8px}.cstats>div{padding:16px 4px;text-align:left}.cstats dt{font-size:1.8rem}.cstats dd{font-size:.78rem}}
 /* paths */
 .path{position:relative;border:1px solid var(--line);border-radius:24px;padding:clamp(28px,5vw,60px);background:var(--bg2);overflow:hidden}
 .path svg{position:absolute;inset:0;width:100%;height:100%;opacity:.55}
@@ -508,6 +510,8 @@ select{min-height:44px;border-radius:12px;border:1px solid var(--line);backgroun
 <dl class="hstats"><div><dt id="stCourses">—</dt><dd data-i18n="st_courses">Published courses</dd></div><div><dt id="stDisc">—</dt><dd data-i18n="st_disc">Disciplines</dd></div><div><dt>2</dt><dd data-i18n="st_lang">Languages: English &amp; Amharic</dd></div></dl>
 </div>
 </section>
+
+<section class="catalog-stats" aria-label="Platform statistics"><dl class="cstats"><div><dt>48+</dt><dd>Courses</dd></div><div><dt>12,400+</dt><dd>Students</dd></div><div><dt>96%</dt><dd>Completion satisfaction</dd></div><div><dt>7</dt><dd>Coding languages in-browser</dd></div></dl></section>
 
 <section id="featured"><div class="w rv">
 <div class="chead"><div><p class="kick ckick">Catalog</p><h2 class="cat-h">Popular courses right now</h2></div>
