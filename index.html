@@ -647,7 +647,7 @@ try{var s=localStorage.getItem("saba_lang");if(s==="am"||s==="en")lang=s}catch(e
   var b=el("div","cb"),f=el("div","cf");
   if(ghost){["45%","85%","65%"].forEach(function(w,k){var s=el("i","sk");s.style.width=w;if(k===1)s.style.height="20px";b.appendChild(s)});var s2=el("i","sk");s2.style.width="30%";f.appendChild(s2)}
   else{if(c.instructor)b.appendChild(el("div","ins",c.instructor));b.appendChild(el("h3","",c.title));
-   var mt=[c.lessons?c.lessons+" "+T[lang].lessons:"",c.duration,c.type,c.students?c.students+" "+T[lang].students:""].filter(Boolean).join(" · ");if(mt)b.appendChild(el("div","mt",mt));
+   var mt=[c.lessons?c.lessons+" "+T[lang].lessons:"",c.duration,c.students?c.students.toLocaleString("en-US")+" "+T[lang].students:""].filter(Boolean).join(" · ");if(mt)b.appendChild(el("div","mt",mt));
    if(c.rating){var r=Math.round(c.rating),st=el("div","st");st.appendChild(el("b","","★★★★★".slice(0,r)+"☆☆☆☆☆".slice(0,5-r)));st.appendChild(document.createTextNode(c.rating+(c.reviews?" ("+c.reviews+")":"")));b.appendChild(st)}
    if(c.description)b.appendChild(el("p","",c.description));
    f.appendChild(el("span","price",c.price===0?T[lang].free:(c.price||"")));
@@ -685,7 +685,7 @@ function renderExplore(){
  if(!list.length){emptyBox(L.nores_t,L.nr_d,[L.reset,resetAll]);return}
  list.forEach(function(c){g.appendChild(card(conv(c),false))});pager()}
 function adapt(it){var ci=CATS.findIndex(function(c){return c.slug===it.category.slug}),n=it.instructors.map(function(x){return x.name}).join(", ");
- return{id:it.id,slug:it.slug,d:ci<0?0:ci,level:it.level,hours:Math.round(it.duration_minutes/6)/10,lessons:it.lesson_count,price:it.price,type:it.course_type,title:{en:it.title_en,am:it.title_am||it.title_en},instructor:n?{en:n,am:n}:null,image:it.thumbnail_url,demo:false}}
+ return{id:it.id,slug:it.slug,d:ci<0?0:ci,level:it.level,hours:Math.round(it.duration_minutes/6)/10,lessons:it.lesson_count,students:Number(it.student_count||0),price:it.price,type:it.course_type,title:{en:it.title_en,am:it.title_am||it.title_en},instructor:n?{en:n,am:n}:null,image:it.thumbnail_url,demo:false}}
 function pager(){var p=$("#xpager"),L=T[lang];p.innerHTML="";if(!API||PG.pages<2)return;
  var a=el("button","btn ghost",L.prev),b=el("button","btn ghost",L.next);a.type=b.type="button";a.disabled=PG.page<=1;b.disabled=PG.page>=PG.pages;
  a.onclick=function(){PG.page--;loadCat();$("#xcount").scrollIntoView({block:"center"})};b.onclick=function(){PG.page++;loadCat();$("#xcount").scrollIntoView({block:"center"})};
