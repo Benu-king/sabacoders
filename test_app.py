@@ -33,6 +33,20 @@ def test_seeded_categories_and_empty_catalogue(anon):
     assert len(anon.get("/api/categories").json()) == 10
     j = anon.get("/api/courses").json(); assert j["total"] == 0 and j["items"] == []
 
+
+def test_public_stats_use_live_database_records(world, anon):
+    before = anon.get("/api/stats").json()
+    cid, _ = make_course(world["adm"], "Stats source course")
+    assert anon.get("/api/stats").json()["published_courses"] == before["published_courses"]
+    assert world["adm"].post(f"/api/manage/courses/{cid}/submit").json()["status"] == "published"
+    after_course = anon.get("/api/stats").json()
+    assert after_course["published_courses"] == before["published_courses"] + 1
+    r = anon.post("/api/auth/register", json={"email": "stats-student@saba.com", "name": "Stats Student", "password": "Passw0rd!!"})
+    assert r.status_code == 201
+    after_student = anon.get("/api/stats").json()
+    assert after_student["students"] == before["students"] + 1
+    assert after_student["completion_satisfaction"] == 0 and after_student["coding_languages"] == 0
+
 def test_auth_basics(anon):
     assert anon.post("/api/auth/register", json={"email": "x@y.com", "name": "X", "password": "short"}).status_code == 422
     r = anon.post("/api/auth/register", json={"email": "new@saba.com", "name": "New", "password": "Passw0rd!!", "role": "admin"}); assert r.status_code == 201 and r.json()["role"] == "student"
