@@ -80,11 +80,11 @@ h1 em{font-style:italic;color:#F5B73B;-webkit-text-fill-color:#F5B73B;font-weigh
 .btn.cta:hover{box-shadow:0 8px 40px rgba(245,183,59,.6)}
 .hcta .ghost{border-style:solid;border-color:rgba(160,180,255,.35)}
 .hcopy .cmd{width:min(480px,100%);margin:0 0 30px}
-.hstats{display:flex;flex-wrap:nowrap;align-items:flex-start;gap:clamp(10px,1.4vw,22px);margin:0;padding:0;max-width:100%;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.hstats{display:flex;flex-wrap:nowrap;align-items:baseline;gap:clamp(14px,2vw,30px);margin:0;padding:0;max-width:100%;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
 .hstats::-webkit-scrollbar{display:none}
-.hstats div{min-width:0;flex:0 0 auto}
-.hstats dt{font:700 clamp(1.35rem,2vw,1.9rem) var(--serif);color:#fff;line-height:1.1}
-.hstats dd{margin:4px 0 0;color:#aebbe0;font-size:clamp(.66rem,.8vw,.82rem);white-space:nowrap}
+.hstats div{display:flex;align-items:baseline;gap:6px;min-width:0;flex:0 0 auto}
+.hstats dt{display:inline;font:700 clamp(1.65rem,2.7vw,2.35rem) var(--serif);color:#fff;line-height:1}
+.hstats dd{display:inline;margin:0;color:#aebbe0;font-size:clamp(.82rem,1.05vw,1rem);line-height:1.2;white-space:nowrap}
 @media (max-width:900px){.hero{grid-template-columns:minmax(0,1fr);gap:0;padding-top:96px}.hstage{min-height:46vh;order:-1}#gl{inset:0;width:100%;height:100%}.hcopy{text-align:center}.hcta,.hstats{justify-content:center}.hcopy .lead,.hcopy .cmd{margin-inline:auto}.eyebrow{justify-content:center;letter-spacing:.1em;font-size:.7rem}.hcopy .lead{display:block}}
 html[lang="am"] h1{line-height:1.3}
 /* hero v3: artwork-matched style */
@@ -694,7 +694,7 @@ function pager(){var p=$("#xpager"),L=T[lang];p.innerHTML="";if(!API||PG.pages<2
  p.appendChild(a);p.appendChild(el("span","",L.pg.replace("{a}",PG.page).replace("{b}",PG.pages)));p.appendChild(b)}
 var tm;function refresh(){if(API){PG.page=1;clearTimeout(tm);tm=setTimeout(loadCat,250)}else renderExplore()}
 function loadHome(){var box=$("#featured-cards"),link=$("#browseAll");fetch("/api/courses?page_size=4&sort=newest",{credentials:"same-origin"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){var items=(j.items||[]).map(adapt);COURSES=items;if(link)link.textContent=T[lang].browse_all+" ("+Number(j.total||0).toLocaleString()+")";if(!box)return;box.innerHTML="";if(!items.length){var e=el("div","empty");e.appendChild(el("strong","",T[lang].feat_t));e.appendChild(el("span","",T[lang].feat_d));box.appendChild(e);return}items.forEach(function(c){box.appendChild(card(conv(c),false))})}).catch(function(){if(!box)return;box.innerHTML="";var e=el("div","empty");e.appendChild(el("strong","","Unable to load published courses"));e.appendChild(el("span","","Please try again in a moment."));box.appendChild(e)})}
-function setStats(s){s=s||{};var fmt=function(n){return Number(n||0).toLocaleString()};var a=$("#stCourses"),b=$("#stStudents"),c=$("#stSatisfaction"),d=$("#stCodeLanguages");if(a)a.textContent=fmt(s.published_courses);if(b)b.textContent=fmt(s.students);if(c)c.textContent=fmt(s.completion_satisfaction)+"%";if(d)d.textContent=fmt(s.coding_languages)}
+function setStats(s){s=s||{};var fmt=function(n){return Number(n||0).toLocaleString()};var a=$("#stCourses"),b=$("#stStudents"),c=$("#stSatisfaction"),d=$("#stCodeLanguages");if(a)a.textContent=fmt(s.published_courses)+"+";if(b)b.textContent=fmt(s.students);if(c)c.textContent=fmt(s.completion_satisfaction)+"%";if(d)d.textContent=fmt(s.coding_languages)}
 function loadStats(){fetch("/api/stats",{credentials:"same-origin"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(setStats).catch(function(){setStats({})})}
 function boot(){
  setStats({});
