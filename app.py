@@ -658,6 +658,13 @@ def patch_cat(cid: int, b: CatIn, db: Session = Depends(get_db), u=Depends(admin
     if db.scalar(select(Category.id).where(Category.slug == b.slug, Category.id != cid)): raise HTTPException(409, "Slug already exists")
     for k, v in b.model_dump().items(): setattr(c, k, v)
     db.commit(); return {"ok": True}
+@app.get("/api/stats")
+def public_stats(db: Session = Depends(get_db)):
+    published_courses = db.scalar(select(func.count()).select_from(Course).where(Course.status == "published")) or 0
+    students = db.scalar(select(func.count()).select_from(User).where(User.role == "student")) or 0
+    # Satisfaction survey responses and supported in-browser coding languages are not stored yet.
+    return {"published_courses": published_courses, "students": students, "completion_satisfaction": 0, "coding_languages": 0}
+
 @app.get("/api/health")
 def health(): return {"ok": True}
 
