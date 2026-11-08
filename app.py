@@ -673,7 +673,7 @@ def public_stats(db: Session = Depends(get_db)):
     published_courses = db.scalar(select(func.count()).select_from(Course).where(Course.status == "published")) or 0
     students = db.scalar(select(func.count()).select_from(User).where(User.role == "student")) or 0
     # Satisfaction survey responses and supported in-browser coding languages are not stored yet.
-    return {"published_courses": published_courses, "students": students, "completion_satisfaction": 0, "coding_languages": 0}
+    return {"published_courses": published_courses, "students": students, "completion_satisfaction": None, "coding_languages": None}
 
 @app.get("/api/health")
 def health(): return {"ok": True}
